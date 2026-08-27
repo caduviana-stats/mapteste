@@ -1,1 +1,5048 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mapeamento 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{--bg:#f8fafc;--panel:#ffffff;--line:#e5e7eb;--text:#0f172a;--muted:#64748b;--shadow:0 14px 35px rgba(15,23,42,.12);--orange:#F97316;--yellow:#FACC15;--red:#DC2626;--purple:#5B2C83;}
+  *{box-sizing:border-box} html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text);background:var(--bg);overflow:hidden}
+  #map{position:absolute;inset:64px 0 0 0;width:100vw;background:#eef2f7}.leaflet-container{font-family:Inter,system-ui,sans-serif;background:#f8fafc}.leaflet-control-attribution{font-size:10px;color:#64748b;background:rgba(255,255,255,.75)!important}.leaflet-control-zoom a{border:0!important;color:#334155!important;background:#fff!important}.leaflet-control-zoom{border:1px solid var(--line)!important;box-shadow:var(--shadow)!important;border-radius:12px;overflow:hidden}
+  .topbar{height:64px;position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:0 22px}.brand{display:flex;align-items:center;gap:12px;min-width:330px}.brand-mark{width:36px;height:36px;border-radius:12px;background:#0f172a;display:grid;place-items:center;color:#fff;font-weight:800}.brand h1{font-size:16px;line-height:1.1;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}.search{flex:1;max-width:620px;position:relative}.search input{width:100%;height:42px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;padding:0 44px 0 44px;font-size:14px;outline:none}.search input:focus{border-color:#94a3b8;background:#fff;box-shadow:0 0 0 4px rgba(148,163,184,.18)}.search:before{content:'⌕';position:absolute;left:17px;top:8px;font-size:22px;color:#94a3b8}.stats{display:flex;gap:8px}.pill{background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:#334155;white-space:nowrap}.pill b{color:#0f172a}
+  .sidebar{position:absolute;z-index:1000;left:16px;top:82px;width:310px;max-height:calc(100vh - 100px);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);box-shadow:var(--shadow);border:1px solid var(--line);border-radius:18px;overflow:hidden}.section{padding:16px;border-bottom:1px solid var(--line)}.section:last-child{border-bottom:0}.section h2{font-size:13px;margin:0 0 12px;color:#334155;text-transform:uppercase;letter-spacing:.05em}.check{display:flex;align-items:center;justify-content:space-between;margin:10px 0;font-size:14px}.check label{display:flex;align-items:center;gap:9px;cursor:pointer}.check input{accent-color:#0f172a}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.legend-row{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#475569}.cas-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cas-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-size:12px;text-align:left;cursor:pointer}.cas-btn.active{background:#0f172a;color:#fff;border-color:#0f172a}.note{font-size:11px;line-height:1.45;color:var(--muted)}
+  .drawer{position:fixed;z-index:5000;right:16px;top:82px;width:380px;max-width:calc(100vw - 32px);max-height:calc(100vh - 100px);background:rgba(255,255,255,.98);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 18px 45px rgba(15,23,42,.18);border-radius:20px;overflow:hidden;transform:translateX(430px);transition:transform .25s ease;pointer-events:none}.drawer.open{transform:translateX(0);pointer-events:auto}.drawer-head{padding:18px 18px 14px;border-bottom:1px solid var(--line)}.drawer-head small{display:inline-block;margin-bottom:8px;font-size:12px;font-weight:700;border-radius:999px;padding:4px 9px;color:#fff}.drawer-head h3{font-size:20px;margin:0;line-height:1.15}.close{position:absolute;top:14px;right:14px;border:0;background:#f1f5f9;border-radius:999px;width:32px;height:32px;cursor:pointer}.drawer-body{padding:16px 18px;overflow:auto;max-height:calc(100vh - 210px)}.field{margin-bottom:16px}.field b{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:5px}.field div{font-size:14px;line-height:1.45}.muted{color:#64748b}.list{padding-left:18px;margin:6px 0 0}.list li{margin:3px 0;font-size:13px}.tooltip-clean{background:#fff;border:1px solid var(--line);box-shadow:0 8px 20px rgba(15,23,42,.12);border-radius:10px;color:#0f172a;font-weight:600;padding:7px 10px}.tooltip-clean:before{display:none}.label-cas{background:rgba(255,255,255,.9);border:1px solid #e2e8f0;border-radius:999px;box-shadow:0 3px 10px rgba(15,23,42,.08);padding:3px 7px;color:#0f172a;font-size:11px;font-weight:800}.label-cas:before{display:none}.leaflet-marker-icon{transition:opacity .15s ease, transform .15s ease}.result-box{position:absolute;top:52px;left:0;right:0;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:none;max-height:300px;overflow-y:auto}.result{padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}.result:hover{background:#f8fafc}.result:last-child{border-bottom:0}.result b{font-size:13px}.result p{font-size:12px;color:#64748b;margin:3px 0 0}.footer-badge{position:absolute;z-index:900;right:16px;bottom:18px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:11px;color:#64748b;box-shadow:0 6px 18px rgba(15,23,42,.08)}
+  @media(max-width:850px){.brand{min-width:auto}.brand p,.stats{display:none}.topbar{gap:12px;padding:0 12px}.sidebar{width:calc(100vw - 32px);max-height:220px;overflow:auto}.drawer{top:auto;bottom:12px;right:12px;left:12px;width:auto;max-height:55vh;transform:translateY(calc(100% + 30px));pointer-events:none}.drawer.open{transform:translateY(0);pointer-events:auto}#map{inset:64px 0 0 0}}
 
+/* Mapa-base claro e sem cores */
+.mapa-base-pb {
+  filter:
+    grayscale(100%)
+    saturate(0%)
+    brightness(1.08)
+    contrast(0.82);
+}
+
+
+</style>
+</head>
+<body>
+<header class="topbar"><div class="brand"><div class="brand-mark">SIG</div><div><h1>Mapeamento 2026</h1><p>Zonas Eleitorais e Territórios</p></div></div><div class="search"><input id="searchInput" placeholder="Pesquisar" autocomplete="off"><div id="results" class="result-box"></div></div><div class="stats"><span class="pill"><b>10</b> CAS</span><span class="pill"><b>47</b> CRAS</span><span class="pill"><b>14</b> CREAS</span><span class="pill"><b>21</b> INSS</span></div></header>
+<div id="map"></div>
+<aside class="sidebar"><div class="section"><h2>Camadas</h2><div class="check"><label><input type="checkbox" data-type="CAS" checked><span><i class="dot" style="background:#F97316"></i> CAS</span></label></div><div class="check"><label><input type="checkbox" data-type="CRAS" checked><span><i class="dot" style="background:#FACC15"></i> CRAS</span></label></div><div class="check"><label><input type="checkbox" data-type="CREAS" checked><span><i class="dot" style="background:#DC2626"></i> CREAS</span></label></div><div class="check"><label><input type="checkbox" data-type="INSS" checked><span><i class="dot" style="background:#5B2C83"></i> INSS</span></label></div></div><div class="section"><h2>Filtrar por CAS</h2><div class="cas-grid" id="casGrid"></div></div><div class="section"><h2>Legenda</h2><div class="legend-row"><span><i class="dot" style="background:#F97316"></i> CAS</span><span><i class="dot" style="background:#FACC15"></i> CRAS</span><span><i class="dot" style="background:#DC2626"></i> CREAS</span><span><i class="dot" style="background:#5B2C83"></i> INSS</span></div><p class="note">Mapa interativo da rede socioassistencial do Município do Rio de Janeiro, com a localização das CAS, CRAS, CREAS e Agências do INSS. Coordenadas aproximadas por bairro/CAS.</p></div></aside>
+<aside id="drawer" class="drawer"><button class="close" id="closeDrawer">×</button><div class="drawer-head"><small id="drawerType">TIPO</small><h3 id="drawerTitle"></h3></div><div class="drawer-body" id="drawerBody"></div></aside>
+<div class="footer-badge">Mapa base · OpenStreetMap</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const FEATURES = [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1729, -22.9068]}, "properties": {"tipo": "CAS", "nome": "1ª CAS – CENTRO", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua Benedito Hipólito, 163 – 2º andar", "bairro": "2º andar", "cep": "20211-130", "email": "cas1@prefeitura.rio", "responsavel": "Viviane Almeida Santos", "abrangencia": "Benfica, Caju, Catumbi, Centro, Cidade Nova, Estácio, Gamboa, Lapa, Mangueira, Paquetá, Rio Comprido, Santa Teresa, Santo Cristo, São Cristóvão, Saúde, Vasco da Gama", "id": 1, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1848, -22.9343]}, "properties": {"tipo": "CAS", "nome": "2ª CAS – VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Pinheiro Machado, 39 – Fundos – Laranjeiras", "bairro": "Laranjeiras", "cep": "22231-090", "email": "cas2@prefeitura.rio", "responsavel": "Claudia Lasry Martins", "abrangencia": "Alto da Boa Vista, Andaraí, Botafogo, Catete, Copacabana, Cosme Velho, Flamengo, Gávea, Glória, Grajaú, Horto, Humaitá, Ipanema, Jardim Botânico, Lagoa, Laranjeiras, Leblon, Leme, Maracanã, Praça da Bandeira, Rocinha, São Conrado, Tijuca, Urca, Vidigal e Vila Isabel", "id": 2, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2677, -22.9028]}, "properties": {"tipo": "CAS", "nome": "3ª CAS – ENGENHO NOVO", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua 24 de Maio, 931 fundos – Engenho Novo (ponto de referência: estação Engenho Novo e GEL- Méier)", "bairro": "Engenho Novo", "cep": "20950-092", "email": "cas3@prefeitura.rio", "responsavel": "Marcia Accioly Cerqueira Serpa", "abrangencia": "Abolição, Água Santa, Cachambi, Del Castilho, Encantado, Engenho da Rainha, Engenho de Dentro, Engenho Novo, Higienópolis, Inhaúma (parte), Jacaré, Jacarezinho, Lins de Vasconcelos, Maria da Graça, Méier, Piedade, Pilares, Riachuelo, Rocha, Sampaio, São Francisco Xavier, Todos os Santos e Tomás Coelho (parte)", "id": 3, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.255, -22.852]}, "properties": {"tipo": "CAS", "nome": "4ª CAS – BONSUCESSO", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua Professor Lacé, 57 – Ramos", "bairro": "Ramos", "cep": "21060-120", "email": "cas4@prefeitura.rio", "responsavel": "Karina da Silva", "abrangencia": "Bancários, Bonsucesso, Brás de Pina, Cacuia, Cidade Universitária, Cocotá, Complexo do Alemão, Cordovil, Freguesia (Ilha do Governador), Galeão, Jardim América, Jardim Carioca, Jardim Guanabara, Manguinhos, Maré, Moneró, Olaria, Parada de Lucas, Pavuna (parte), Penha, Penha Circular, Pitangueiras, Portuguesa, Praia da Bandeira, Ramos, Ribeira, Tauá, Vigário Geral, Vila da Penha (parte) e Zumbi", "id": 4, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3391, -22.87]}, "properties": {"tipo": "CAS", "nome": "5ª CAS – MADUREIRA", "cas": "5ª CAS", "cas_nome": "MADUREIRA", "endereco": "Rua Carvalho de Souza, 274 / Sala 8 – Madureira (XV R.A)", "bairro": "Madureira", "cep": "21350-180", "email": "cas5@prefeitura.rio", "responsavel": "Claudia de Paiva de Castro", "abrangencia": "Bento Ribeiro, Campinho, Cascadura, Cavalcanti, Coelho Neto, Engenheiro Leal, Guadalupe, Honório Gurgel, Madureira, Marechal Hermes, Mariópolis (parte), Oswaldo Cruz, Parque Anchieta, Quintino Bocaiúva, Ricardo de Albuquerque, Rocha Miranda, Turiaçu e Vaz Lobo", "id": 5, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3231, -22.8314]}, "properties": {"tipo": "CAS", "nome": "6ª CAS – IRAJÁ", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Rua Capitão Aliatar Martins, 211 – Irajá", "bairro": "Irajá", "cep": "21235-515", "email": "cas6@prefeitura.rio", "responsavel": "Leila Marques", "abrangencia": "Acari, Anchieta (parte), Barros Filho, Colégio, Costa Barros, Irajá, Parque Colúmbia, Pavuna, Vincente de Carvalho, Vila da Penha, Vila Kosmos e Vista Alegre", "id": 6, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3659, -23.0004]}, "properties": {"tipo": "CAS", "nome": "7ª CAS – JACAREPAGUÁ", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Av. Ayrton Senna, 2001 BL C – Barra da Tijuca", "bairro": "Barra da Tijuca", "cep": "22775-002", "email": "cas7@prefeitura.rio", "responsavel": "Elaine Cristina Montenegro", "abrangencia": "Anil, Barra da Tijuca, Camorim, Cidade de Deus, Colônia, Curicica, Freguesia (Jacarepaguá), Gardênia Azul, Grumari, Itanhagá, Jacarepaguá, Joá, Pechincha, Praça Seca, Recreio dos Bandeirantes, Tanque, Taquara, Vargem Grande, Vargem Pequena, Vila Valqueire", "id": 7, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4693, -22.8808]}, "properties": {"tipo": "CAS", "nome": "8ª CAS – BANGU", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Santa Cecília, 984 / 2º andar – Bangu", "bairro": "Bangu", "cep": "21810-080", "email": "cas8@prefeitura.rio", "responsavel": "Rosilaine Rabelo", "abrangencia": "Bangu, Campo dos Afonso, Deodoro, Gericinó, Jabour, Jardim Sulacap, Magalhães Bastos, Padre Miguel, Realengo, Santíssimo (até ETERJ), Senador Camará e Vila Militar", "id": 8, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5585, -22.9035]}, "properties": {"tipo": "CAS", "nome": "9ª CAS – CAMPO GRANDE", "cas": "9ª CAS", "cas_nome": "CAMPO GRANDE", "endereco": "Rua do Rádio, s\\nº (Praça José Euzébio) – Campo Grande", "bairro": "Campo Grande", "cep": "23087-060", "email": "cas9@prefeitura.rio", "responsavel": "Tatiana Fonseca", "abrangencia": "Campo Grande, Cosmos, Inhoaíba, Santíssimo e Senador Vasconcelos", "id": 9, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6846, -22.9185]}, "properties": {"tipo": "CAS", "nome": "10ª CAS – SANTA CRUZ", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Fernanda, 155 – Santa Cruz (Superintendência Regional de Santa Cruz)", "bairro": "Santa Cruz", "cep": "23515-121", "email": "cas10@prefeitura.rio", "responsavel": "Wagner Andrade", "abrangencia": "Barra de Guaratiba, Guaratiba, Ilha de Guaratiba, Paciência, Pedra de Guaratiba, Santa Cruz e Sepetiba", "id": 10, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2399, -22.8896]}, "properties": {"tipo": "CRAS", "nome": "CRAS ADALBERTO ISMAEL DE SOUZA", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua Ana Neri, 636 – Benfica (dentro da Vila Olímpica da Mangueira – área 3, ao lado do Colégio Santa Mônica)", "bairro": "Benfica", "cep": "", "email": "crasadalbertoismael@prefeitura.rio", "responsavel": "Silvana Maria Alves de Araújo dos Santos", "abrangencia": "Benfica, Leopoldina, Mangueira e São Cristóvão (parte)", "id": 11, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2096, -22.9257]}, "properties": {"tipo": "CRAS", "nome": "CRAS GERMINAL DOMINGUES", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua Itapiru, 1.443 / 3º andar – Rio Comprido", "bairro": "Rio Comprido", "cep": "", "email": "crasgerminaldomingues@prefeitura.rio", "responsavel": "Adriana Maria Pereira Velasco", "abrangencia": "Catumbi, Cidade Nova Estácio e Rio Comprido", "id": 12, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2227, -22.8992]}, "properties": {"tipo": "CRAS", "nome": "CRAS DEPUTADO LUIS EDUARDO MAGALHÃES", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua Paraíso do Tuiuti, s/no – Morro do Tuiuti – São Cristóvão (Largo do Pedregulho – Favela Bairro)", "bairro": "São Cristóvão", "cep": "", "email": "crasdlem@prefeitura.rio", "responsavel": "Cláudia Eugênia da Silva", "abrangencia": "Benfica, São Cristóvão (Rua São Luis Gonzaga – lado par – e Rua Bela) e Vasco da Gama", "id": 13, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2209, -22.8806]}, "properties": {"tipo": "CRAS", "nome": "CRAS XV DE MAIO", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua General Sampaio, 74 – Caju (ponto final do ônibus 906)", "bairro": "Caju", "cep": "", "email": "cras15demaio@prefeitura.rio", "responsavel": "Ana Carolina Nunes Ferreira", "abrangencia": "Caju", "id": 14, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1905, -22.8976]}, "properties": {"tipo": "CRAS", "nome": "CRAS DODÔ DA PORTELA", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua Rivadávia Corrêa, 188 / 2º andar – Gamboa (ponto de referência: Clínica da Família Nélio de Oliveira)", "bairro": "Gamboa", "cep": "", "email": "crasdododaportela@prefeitura.rio", "responsavel": "Flávia Alves", "abrangencia": "Centro (parte), Gamboa, Ilha de Paquetá, Santo Cristo e Saúde", "id": 15, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1729, -22.9068]}, "properties": {"tipo": "CRAS", "nome": "CRAS PROFESSORA ISMÊNIA DE LIMA MARTINS", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua da Alfândega, 114 – Centro (próximo às Casas Bahia)", "bairro": "Centro", "cep": "", "email": "crasismenialimamartins@prefeitura.rio", "responsavel": "Flávia Martins da Silva Pereira", "abrangencia": "Centro (Av. Presidente Vargas, lado ímpar), Lapa e Santa Teresa", "id": 16, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2657, -22.9224]}, "properties": {"tipo": "CRAS", "nome": "CRAS PRESIDENTE ITAMAR FRANCO", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Caçapava, 305 – Grajaú (ponto de referência: Bar da Dona Chica)", "bairro": "Grajaú", "cep": "", "email": "craspresidenteitamarfranco@prefeitura.rio", "responsavel": "Fábio Santos", "abrangencia": "Andaraí e Grajaú", "id": 17, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2485, -22.915]}, "properties": {"tipo": "CRAS", "nome": "CRAS ROSANI CUNHA", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Visconde de Santa Isabel, 412 – Vila Isabel (ponto de referência: lado esquerdo da Estrada Grajaú-Jacarepaguá, ao lado do jornal O Povo)", "bairro": "Vila Isabel", "cep": "", "email": "crasrosanicunha@prefeitura.rio", "responsavel": "Veronica Couto Vidal da Silva", "abrangencia": "Vila Isabel, Maracanã e Engenho Novo (parte)", "id": 18, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.267, -22.999]}, "properties": {"tipo": "CRAS", "nome": "CRAS RINALDO DE LAMARE", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Av. Niemeyer, 776 / 7º e 9º andares – São Conrado", "bairro": "São Conrado", "cep": "", "email": "crasrinaldo@prefeitura.rio", "responsavel": "Patrícia Soeiro", "abrangencia": "Gávea, Rocinha, São Conrado e Vidigal", "id": 19, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.184, -22.9519]}, "properties": {"tipo": "CRAS", "nome": "CRAS PADRE VELOSO", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua São Clemente, 312 – Botafogo (ponto de referência: Clínica da Família Santa Marta)", "bairro": "Botafogo", "cep": "", "email": "craspadrevelloso@prefeitura.rio", "responsavel": "Carla Sampaio de Castro e Silva Reis", "abrangencia": "Botafogo, Catete, Cosme Velho, Flamengo, Glória, Humaitá, Lagoa (parte) e Laranjeiras", "id": 20, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2373, -22.9268]}, "properties": {"tipo": "CRAS", "nome": "CRAS TIJUCA", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Guapiara, 43 – Tijuca (ponto de referência: Praça Saens Pena)", "bairro": "Tijuca", "cep": "", "email": "crastijuca.smas@prefeitura.rio", "responsavel": "Ana Lucia Bastos de Castro Tannes", "abrangencia": "Alto da Boa Vista, Praça da Bandeira e Tijuca", "id": 21, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1822, -22.9711]}, "properties": {"tipo": "CRAS", "nome": "CRAS SEBASTIÃO TEODORO FILHO", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Saint Roman, 172 – Copacabana (ponto de referência: Clínica da Família)", "bairro": "Copacabana", "cep": "", "email": "crassebastiaoteodorofilho.smas@prefeitura.rio", "responsavel": "Simone Rosa", "abrangencia": "Copacabana, Ipanema, Leblon e Leme", "id": 22, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3111, -22.8918]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARIA DA LUZ DOS SANTOS", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua Ana Quintão, 380 – Piedade (ponto de referência: Clínica da Família Olga Pacheco)", "bairro": "Piedade", "cep": "", "email": "crasmariadaluzdossantos@prefeitura.rio", "responsavel": "Maria Janaina Da Silva Fonseca", "abrangencia": "Abolição (parte), Engenho da Rainha, Engenho de Dentro, Inhaúma, Piedade (parte), Pilares, Tomás Coelho", "id": 23, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2952, -22.9029]}, "properties": {"tipo": "CRAS", "nome": "CRAS SOBRAL PINTO", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua Pernambuco, 484 – Engenho de Dentro (ponto de referência: Praça Rio Grande do Norte)", "bairro": "Engenho de Dentro", "cep": "", "email": "crassobralpinto@prefeitura.rio", "responsavel": "Jacqueline Carvalho Medeiros", "abrangencia": "Abolição (parte), Água Santa, Cachambi (parte), Del Castilho (parte), Encantado, Engenho de Dentro (exceto o lado par da Av. Dom Hélder Câmara e a Comunidade Fernão Cardim), Maria da Graça, Méier (exceto comunidade Boca do Mato), Piedade (parte), Pilares (parte) e Todos os Santos", "id": 24, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2484, -22.8994]}, "properties": {"tipo": "CRAS", "nome": "CRAS CAIO FERNANDO ABREU", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua Lino Teixeira, 112 – Rocha", "bairro": "Rocha", "cep": "", "email": "crascaiofernandoabreu@prefeitura.rio", "responsavel": "Angela Virginia Vieira do Amaral", "abrangencia": "Cachambi (parte), Del Castilho (parte), Higienópolis, Jacaré, Jacarezinho e Maria da Graça (parte)", "id": 25, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2858, -22.9117]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARY RICHMOND", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua Conselheiro Ferraz, 54 – Lins de Vasconcelos (ponto de referência: esquina com Rua Vinte de Março)", "bairro": "Lins de Vasconcelos", "cep": "", "email": "crasmaryrichmond@prefeitura.rio", "responsavel": "Ana Carla de Souza Pavide", "abrangencia": "s: Engenho Novo, Lins de Vasconcelos, Riachuelo, Rocha, São Francisco Xavier (parte) e Sampaio", "id": 26, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2539, -22.862]}, "properties": {"tipo": "CRAS", "nome": "CRAS NELSON MANDELA", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua da Regeneração, 654 – Bonsucesso (ponto de referência: passarela 9 da Av. Brasil)", "bairro": "Bonsucesso", "cep": "", "email": "crasnelsonmandela.smas@prefeitura.rio", "responsavel": "Viviane dos Santos de Oliveira de Freitas", "abrangencia": "Complexo da Maré, Bonsucesso e parte de Ramos", "id": 27, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3231, -22.8108]}, "properties": {"tipo": "CRAS", "nome": "CRAS NELZA FELIPE PEREIRA", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua Rodolfo Chamberlland, s/nº – Jardim América (ponto de referência: Campo do Veras)", "bairro": "Jardim América", "cep": "", "email": "crasnelzafelipe.smas@prefeitura.rio", "responsavel": "Sandra Maria da Silva", "abrangencia": "Jardim América, Parada de Lucas e Vigário Geral", "id": 28, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2032, -22.7958]}, "properties": {"tipo": "CRAS", "nome": "CRAS PROFESSOR DARCY RIBEIRO", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Estrada Governador Chagas Freitas, 1.900 – Parque Royal (Portuguesa – Ilha do Governador)", "bairro": "Parque Royal", "cep": "", "email": "craspdcr.smas@prefeitura.rio", "responsavel": "Maria da Gloria Alves Costa", "abrangencia": "Bancários, Cacuia, Cidade Universitária, Cocotá, Freguesia, Galeão, Jardim Carioca, Jardim Guanabara, Moneró, Portuguesa, Pitangueiras, Praia da Bandeira, Ribeira, Tauá (Dendê, Praia da Rosa, Querosene, Servidores e Sapucaia) e Zumbi", "id": 29, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2766, -22.837]}, "properties": {"tipo": "CRAS", "nome": "CRAS CARLOS DRUMMOND DE ANDRADE", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua Taperoá, 308 – Morro de Caracol (Penha)", "bairro": "Morro de Caracol", "cep": "", "email": "crascda.smas@prefeitura.rio", "responsavel": "Cláudia Regina", "abrangencia": "Olaria, Penha e Ramos (parte)", "id": 30, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.255, -22.852]}, "properties": {"tipo": "CRAS", "nome": "CRAS JOÃO FASSARELA", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua Flora Lobo, s/nº – Parque Ary Barroso (Penha – ponto de referência: UPA da Penha)", "bairro": "Parque Ary Barroso", "cep": "", "email": "crasjoaofassarela.smas@prefeitura.rio", "responsavel": "Solange Pinheiro", "abrangencia": "Brás de Pina, Cordovil (Cidade Alta) e Penha Circular", "id": 31, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.255, -22.852]}, "properties": {"tipo": "CRAS", "nome": "CRAS RAMOS", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Estrada do Itararé, 222 – Ramos (Complexo do Alemão)", "bairro": "Ramos", "cep": "", "email": "crasramos.smas@prefeitura.rio", "responsavel": "Christiane", "abrangencia": "Complexo do Alemão, Bonsucesso (parte), Manguinhos e Ramos (parte)", "id": 32, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3756, -22.8386]}, "properties": {"tipo": "CRAS", "nome": "CRAS YARA AMARAL", "cas": "5ª CAS", "cas_nome": "MADUREIRA", "endereco": "Estrada do Camboatá, 23000 / lj. 115 – Guadalupe", "bairro": "Guadalupe", "cep": "", "email": "crasiaraamaral.smas@prefeitura.rio", "responsavel": "Cláudia Castro", "abrangencia": "Guadalupe, Marechal Hermes, Parque Anchieta e Ricardo de Albuquerque", "id": 33, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3391, -22.87]}, "properties": {"tipo": "CRAS", "nome": "CRAS JOSÉ CARLOS CAMPOS", "cas": "5ª CAS", "cas_nome": "MADUREIRA", "endereco": "Rua Guarama, s/nº – Rocha Miranda – Cep.: 21510-230 (ponto de referência: rua da 40ª DP)", "bairro": "Cep.: 21510-230", "cep": "", "email": "crasjcc.smas@prefeitura.rio", "responsavel": "Angélica Silva do Rosário", "abrangencia": "Bento Ribeiro, Coelho Neto, Honório Gurgel, Oswaldo Cruz, Rocha Miranda e Turiaçu", "id": 34, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3391, -22.87]}, "properties": {"tipo": "CRAS", "nome": "CRAS ZÓZIMO BARROSO DO AMARAL", "cas": "5ª CAS", "cas_nome": "MADUREIRA", "endereco": "Av. Ministro Edgard Romero, 400 – Madureira (ponto de referência: Instituto de Educação Carmela Dutra)", "bairro": "Madureira", "cep": "", "email": "craszozimobarroso.smas@prefeitura.rio", "responsavel": "Andréia da Costa Pinheiro", "abrangencia": "Campinho, Cascadura, Cavalcanti, Engenheiro Leal, Madureira, Quintino Bocaiúva e Vaz Lobo", "id": 35, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3231, -22.8314]}, "properties": {"tipo": "CRAS", "nome": "CRAS RUBENS CORRÊA", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Rua Capitão Aliatar Martins, 211 – Irajá (ponto de referência: Pça. Dalva de Oliveira)", "bairro": "Irajá", "cep": "", "email": "crasrubenscorrea.smas@prefeitura.rio", "responsavel": "Cristiane da Silva Disconzi", "abrangencia": "Colégio, Irajá, Vicente de Carvalho, Vila da Penha, Vila Kosmos e Vista Alegre", "id": 36, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3607, -22.8069]}, "properties": {"tipo": "CRAS", "nome": "CRAS FRANCISCO SALES DE MESQUITA", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Rua Mercúrio, 430 – Pavuna (ponto de referência: próximo ao Colégio Mercúrio)", "bairro": "Pavuna", "cep": "", "email": "crasfranciscosales.smas@prefeitura.rio", "responsavel": "Álida Aparecida Pereira de Lucena", "abrangencia": "Anchieta (parte), Costa Barros e Pavuna", "id": 37, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3407, -22.8239]}, "properties": {"tipo": "CRAS", "nome": "CRAS ACARI", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Rua Guaiúba, 150 – Acari (ponto de referência: próximo ao Hospital Ronaldo Gazolla)", "bairro": "Acari", "cep": "", "email": "crasacari.smas@prefeitura.rio", "responsavel": "Sueli Santos de Oliveira", "abrangencia": "Acari, Barros Filho e Parque Colúmbia", "id": 38, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3397, -22.9552]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARCIO BROTTO", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Rua General José Eulálio, 142 – Anil", "bairro": "Anil", "cep": "", "email": "crasmarciobrotto.smas@prefeitura.rio", "responsavel": "Célia Valéria Sodré de Souza", "abrangencia": "Anil, Barra da Tijuca (parte – da Barrinha às proximidades do Shopping Citta America). Gardênia Azu, Itanhagá e Joá", "id": 39, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3627, -22.9483]}, "properties": {"tipo": "CRAS", "nome": "CRAS ELIS REGINA", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Av. Edgard Werneck, 1.565 – Cidade de Deus (ponto de referência: CIEP João Batista)", "bairro": "Cidade de Deus", "cep": "", "email": "craselisregina.smas@prefeitura.rio", "responsavel": "Fabíola", "abrangencia": "Barra da Tijuca (parte – Av. Ayrton Senna até o Terminal Alvorada) e Cidade de Deus", "id": 40, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3528, -22.8967]}, "properties": {"tipo": "CRAS", "nome": "CRAS GONZAGUINHA", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Praça Barão da Taquara, 9 – Praça Seca (ponto de referência: 16ª Região Administrativa, entre o Country Club da Pça. Seca e a Caixa Econômica Federal)", "bairro": "Praça Seca", "cep": "", "email": "crasgonzaguinha.smas@prefeitura.rio", "responsavel": "Glaucia da Silva Anastácio da Fonseca", "abrangencia": "Freguesia, Pechincha, Praça Seca, Tanque e Vila Valqueire", "id": 41, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.459, -22.9916]}, "properties": {"tipo": "CRAS", "nome": "CRAS ZUMBI DOS PALMARES", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Estrada dos Bandeirantes, 11.227 – Vargem Pequena (ponto de referência: Comunidade César Maia)", "bairro": "Vargem Pequena", "cep": "", "email": "craszumbidospalmares.smas@prefeitura.rio", "responsavel": "Vanessa de Medeiros Gomes", "abrangencia": "Camorim, Curicica, Grumari, Recreio, Rio Centro, Vargem Grande e Vargem Pequena", "id": 42, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4023, -22.9401]}, "properties": {"tipo": "CRAS", "nome": "CRAS MACHADO DE ASSIS", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Rua Núcleo Rodrigues Caldas, 804 – Colônia (ponto de referência: Colônia Juliano Moreira)", "bairro": "Colônia", "cep": "", "email": "crasmachadodeassis.smas@prefeitura.rio", "responsavel": "Sheila Cristina De Moura Valle", "abrangencia": "Colônia, Curicica (parte), Jordão e Taquara", "id": 43, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4693, -22.8808]}, "properties": {"tipo": "CRAS", "nome": "CRAS DEPUTADA HELONEIDA STUDART", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Rangel Pestana, 510 – Bangu (ponto de referência: próximo à Rua Rio da Prata)", "bairro": "Bangu", "cep": "", "email": "crasdheloneida.smas@prefeitura.rio", "responsavel": "IV: Maria Angélica Lacerda da Silva", "abrangencia": "Bangu, Senador Camará, Santíssimo (parte)", "id": 44, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4693, -22.8808]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARIA THEREZA FREIRE MOURA", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Silva Cardoso, 967 – Bangu (ponto de referência: próximo ao Hospital São Matheus)", "bairro": "Bangu", "cep": "", "email": "crasmariaterezafm.smas@prefeitura.rio", "responsavel": "IV: Valéria Cristina de Azevedo Lima", "abrangencia": "Bangu (parte), Padre Miguel e Realengo", "id": 45, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4693, -22.8808]}, "properties": {"tipo": "CRAS", "nome": "CRAS VILA MORETTI", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Av. Ministro Ary Franco, 278 – Bangu", "bairro": "Bangu", "cep": "", "email": "crasvilamoretti.smas@prefeitura.rio", "responsavel": "", "abrangencia": "Bangu (parte), Padre Miguel (parte) e Senador Camará (parte)", "id": 46, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4304, -22.8764]}, "properties": {"tipo": "CRAS", "nome": "CRAS OSWALDO OSWALDO ANTONIO FERREIRA", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Dona Olímpia, 220 – Realengo (ponto de referência: próximo ao GET Carlos Maui)", "bairro": "Realengo", "cep": "", "email": "crasoswaldoantoniof.smas@prefeitura.rio", "responsavel": "André Luiz", "abrangencia": "Deodoro, Magalhães Bastos, Realengo (parte), Sulacap e Vila Militar", "id": 47, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4693, -22.8808]}, "properties": {"tipo": "CRAS", "nome": "CRAS OLÍMPIA ESTEVES", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Santa Cecília, 984 – Bangu (ponto de referência: próximo à Paróquia São Sebastião e Santa Cecília)", "bairro": "Bangu", "cep": "", "email": "crasolimpiaesteves.smas@prefeitura.rio", "responsavel": "Simone Teixeira", "abrangencia": "Bangu, Batan, Realengo e Vila Kennedy", "id": 48, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5585, -22.9035]}, "properties": {"tipo": "CRAS", "nome": "CRAS ALUNO MARCELO CARDOSO TOMÉ", "cas": "9ª CAS", "cas_nome": "CAMPO GRANDE", "endereco": "Rua Breno Pessoa, 15 – Campo Grande", "bairro": "Campo Grande", "cep": "", "email": "crasalunomarcelo.smas@prefeitura.rio", "responsavel": "Érica Cristina", "abrangencia": "Campo Grande, Santíssimo (parte) e Senador Vasconcelos (parte)", "id": 49, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5585, -22.9035]}, "properties": {"tipo": "CRAS", "nome": "CRAS LUISA MAHIM", "cas": "9ª CAS", "cas_nome": "CAMPO GRANDE", "endereco": "Rua Campo Grande, 3058 – Inhoaíba – (Ponto de referência: próximo ao GET Medalhista Olímpico Diego Hypólito)", "bairro": "", "cep": "", "email": "crasluizamahim.smas@prefeitura.rio", "responsavel": "Cilene Boarro", "abrangencia": "Cosmos e Inhoaíba", "id": 50, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5585, -22.9035]}, "properties": {"tipo": "CRAS", "nome": "CRAS CECILIA MEIRELES", "cas": "9ª CAS", "cas_nome": "CAMPO GRANDE", "endereco": "Rua Viúva Dantas, 695 – Campo Grande", "bairro": "Campo Grande", "cep": "", "email": "crasceciliameireles.smas@prefeitura.rio", "responsavel": "Renata Rocha", "abrangencia": "Campo Grande, Santíssimo e Senador Vasconcelos (parte)", "id": 51, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.7067, -22.9679]}, "properties": {"tipo": "CRAS", "nome": "CRAS BETTY FRIEDMAN", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Prainha, 57 – Sepetiba (ponto de referência: próximo ao GET Professor Carmo Reis)", "bairro": "Sepetiba", "cep": "", "email": "crasbettyfriedan.smas@prefeitura.rio", "responsavel": "Denise Assunção", "abrangencia": "Alagado, Balneário Globo, Beco da Guarda, Beco do Constâncio, Mata Sete, Nova Sepetiba, Piai, Ponta do Ipiranga, Praia da Brisa, Praia de Sepetiba, Praia do Cardo, Praia do Recôncavo, Tijolinho, Vila Fernanda e Sepetiba", "id": 52, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6358, -22.9001]}, "properties": {"tipo": "CRAS", "nome": "CRAS PROFESSORA HELENICE NUNES JACINTHO", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Travessa JK, 5 – Paciência (ponto de referência: Estação BRT 31 de Outubro)", "bairro": "Paciência", "cep": "", "email": "s: crashelenicenunesj.smas@prefeitura.rio e cjacintocrashelenicenunesj.smas@prefeitura.rio", "responsavel": "Andréa Rodrigues", "abrangencia": "Paciência", "id": 53, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6846, -22.9185]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARIA CLARA MACHADO", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Gabriel Bernardes, s/nº – Santa Cruz", "bairro": "Santa Cruz", "cep": "", "email": "crasmariaclaramachado.smas@prefeitura.rio", "responsavel": "Elaine Militão", "abrangencia": "Santa Cruz", "id": 54, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6358, -22.9001]}, "properties": {"tipo": "CRAS", "nome": "CRAS IACYRA FRAZÃO SOUSA", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Eremias Delizoicoiv, s/nº – Urucânia (Paciência)", "bairro": "Urucânia", "cep": "", "email": "crasiacyrafrazao.smas@prefeitura.rio", "responsavel": "Cintia Carla Rosa Serafim", "abrangencia": "Coqueiral, Mangaratiba e Urucânia", "id": 55, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5871, -22.9945]}, "properties": {"tipo": "CRAS", "nome": "CRAS MARIA VIEIRA BAZANI", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Estrada do Mato Alto, 5620 – Guaratiba (Fazenda Modelo, próximo à Estação BRT Mato Alto)", "bairro": "Guaratiba", "cep": "", "email": "crasmariavieirabazani.smas@prefeitura.rio", "responsavel": "Márcia Cristina", "abrangencia": "Barra de Guaratiba, Guaratiba, Ilha de Guaratiba, Jardim Maravilha e Pedra de Guaratiba", "id": 56, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6846, -22.9185]}, "properties": {"tipo": "CRAS", "nome": "CRAS JORGE GONÇALVES", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Primeira, 61 – Santa Cruz (Largo do Bodegão)", "bairro": "Santa Cruz", "cep": "", "email": "crasjorgegoncalves.smas@prefeitura.rio", "responsavel": "Lilian Teixeira", "abrangencia": "Antares, Areia Branca, Cesarão I, II e III, Cruz das Almas, Jaqueira, Largo do Arão, Matadouro, Novo Camarão, Nova Palestina, Pedrinhas, São Benedito, Santa Cruz (centro), Santa Veridiana, Vitor Dumas e Rolas I e II", "id": 57, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1729, -22.9068]}, "properties": {"tipo": "CREAS", "nome": "CREAS SIMONE DE BEAUVOIR", "cas": "1ª CAS", "cas_nome": "CENTRO", "endereco": "Rua República do Líbano, 54 – Centro (ponto de referência: próximo ao Campo de Santana)", "bairro": "Centro", "cep": "", "email": "creassimonedebeauvoir@prefeitura.rio", "responsavel": "Roseane Garcia", "abrangencia": "Benfica, Caju, Catumbi, Centro, Cidade Nova, Estácio, Gamboa, Lapa, Mangueira, Paquetá, Rio Comprido, Santa Teresa, Santo Cristo, São Cristóvão, Saúde, Vasco da Gama", "id": 58, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2373, -22.9268]}, "properties": {"tipo": "CREAS", "nome": "CREAS ARLINDO RODRIGUES", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua Desembargador Isidro, 48 / fundos – Tijuca", "bairro": "Tijuca", "cep": "", "email": "creasarlindorodrigues@prefeitura.rio", "responsavel": "Gabriela Furtado", "abrangencia": "Alto da Boa Vista, Andaraí, Grajaú, Maracanã, Praça da Bandeira, Tijuca e Vila Isabel", "id": 59, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.1848, -22.9343]}, "properties": {"tipo": "CREAS", "nome": "CREAS MARIA LINA DE CASTRO LIMA", "cas": "2ª CAS", "cas_nome": "VILA ISABEL, GRANDE TIJUCA E ZONA SUL", "endereco": "Rua São Salvador, 56 / 2º andar – Laranjeiras", "bairro": "Laranjeiras", "cep": "", "email": "creasmarialina@prefeitura.rio", "responsavel": "Leandro Teixeira", "abrangencia": "s: Botafogo, Catete, Copacabana, Cosme Velho, Flamengo, Gávea, Glória, Horto, Humaitá, Ipanema, Jardim Botânico, Lagoa, Laranjeiras, Leblon, Leme, Rocinha, São Conrado, Urca e Vidigal", "id": 60, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2818, -22.9029]}, "properties": {"tipo": "CREAS", "nome": "CREAS JANETE CLAIR", "cas": "3ª CAS", "cas_nome": "ENGENHO NOVO", "endereco": "Rua Piranga, 50 – Méier (ponto de referência: Caixa Econômica da Rua Dias da Cruz)", "bairro": "Méier", "cep": "", "email": "creasjaneteclair@prefeitura.rio", "responsavel": "Denise Leal", "abrangencia": "Abolição, Água Santa, Cachambi, Del Castilho, Encantado, Engenho da Rainha, Engenho de Dentro, Engenho Novo, Higienópolis, Inhaúma (parte), Jacaré, Jacarezinho, Lins de Vasconcelos, Maria da Graça, Méier, Piedade, Pilares, Riachuelo, Rocha, Sampaio, São Francisco Xavier, Todos os Santos e Tomás Coelho (parte)", "id": 61, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.2435, -22.8091]}, "properties": {"tipo": "CREAS", "nome": "CREAS STELLA MARIS", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Estrada dos Maracajás, 973 – Galeão / Ilha do Governador (ponto de referência: localizado entre a Creche Stella Maris e a CRAF Tom Jobim)", "bairro": "Galeão", "cep": "", "email": "creasstellamaris@prefeitura.rio", "responsavel": "Fabiana Figueiredo", "abrangencia": "Ilha do Governador, Cidade Universitária e Maré", "id": 62, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.255, -22.852]}, "properties": {"tipo": "CREAS", "nome": "CREAS NELSON CARNEIRO", "cas": "4ª CAS", "cas_nome": "BONSUCESSO", "endereco": "Rua Professor Lacé, 57 – Ramos (ponto de referência: próximo à estação Supervia Ramos)", "bairro": "Ramos", "cep": "", "email": "creasnelsoncarneiro@prefeitura.rio", "responsavel": "Danielle Monteiro", "abrangencia": "Bonsucesso, Brás de Pina, Complexo do Alemão, Cordovil, Jardim América, Manguinhos, Olaria, Parada de Lucas, Pavuna (parte), Penha, Penha Circular, Ramos, Vigário Geral e Vila da Penha (parte)", "id": 63, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3391, -22.87]}, "properties": {"tipo": "CREAS", "nome": "CREAS PROFESSORA MÁRCIA LOPES", "cas": "5ª CAS", "cas_nome": "MADUREIRA", "endereco": "Rua Carvalho de Souza, 274 – Madureira (ponto de referência: ao lado das Casas Bahia)", "bairro": "Madureira", "cep": "", "email": "creasprofmarcialopes@prefeitura.rio", "responsavel": "Flávia Cabral", "abrangencia": "Bento Ribeiro, Campinho, Cavalcante, Cascadura, Coelho Neto, Engenheiro Leal, Guadalupe, Honório Gurgel, Madureira, Marechal Hermes, Mariópolis, Oswaldo Cruz, Parque Anchieta, Quintino Bocaiúva, Ricardo de Albuquerque, Rocha Miranda, Tiriaçu e Vaz Lobo", "id": 64, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.35, -22.8317]}, "properties": {"tipo": "CREAS", "nome": "CREAS JOÃO HÉLIO FERNANDES VIEITES", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Rua Ouseley, 421 – Coelho Neto (ponto de referência: ao lado do PAM Coelho Neto)", "bairro": "Coelho Neto", "cep": "", "email": "creasjoaohelio@prefeitura.rio", "responsavel": "Mara Fernandes", "abrangencia": "Acari, Anchieta, Barros Filho, Costa Barros, Parque Colúmbia e Pavuna", "id": 65, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3231, -22.8314]}, "properties": {"tipo": "CREAS", "nome": "CREAS WANDA ENGEL ADUAN", "cas": "6ª CAS", "cas_nome": "IRAJÁ", "endereco": "Estrada Pedro Borges de Freitas, 144 – Irajá", "bairro": "Irajá", "cep": "", "email": "creaswandaengel@prefeitura.rio", "responsavel": "Annatanes", "abrangencia": "Colégio, Irajá, Vincente de Carvalho, Vila da Penha, Vila Kosmos e Vista Alegre", "id": 66, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.3844, -22.9217]}, "properties": {"tipo": "CREAS", "nome": "CREAS DANIELA PEREZ", "cas": "7ª CAS", "cas_nome": "JACAREPAGUÁ", "endereco": "Rua Nacional, 275 – Taquara (ponto de referência: em frente ao Colégio Carlos Lacerda)", "bairro": "Taquara", "cep": "", "email": "creasdanielaperez@prefeitura.rio", "responsavel": "Cirenice Nascimento", "abrangencia": "Anil, Barra da Tijuca, Camorim, Cidade de Deus, Colônia, Curicica, Freguesia (Jacarepaguá), Gardênia Azul, Grumari, Itanhagá, Jacarepaguá, Joá, Pechincha, Praça Seca, Recreio dos Bandeirantes, Tanque, Taquara, Vargem Grande, Vargem Pequena, Vila Valqueire", "id": 67, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.4304, -22.8764]}, "properties": {"tipo": "CREAS", "nome": "CREAS PROFESSORA ALDAÍZA SPOSATI", "cas": "8ª CAS", "cas_nome": "BANGU", "endereco": "Rua Limites, 1,349 – Realengo", "bairro": "Realengo", "cep": "", "email": "creasprofaldaizasposati@prefeitura.rio", "responsavel": "Roberta Marinheiro", "abrangencia": "Bangu, Campo dos Afonso, Deodoro, Gericinó, Jabour, Jardim Sulacap, Magalhães Bastos, Padre Miguel, Realengo, Santíssimo (até ETERJ), Senador Camará e Vila Militar", "id": 68, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.5585, -22.9035]}, "properties": {"tipo": "CREAS", "nome": "CREAS ZILDA ARNS NEUMANN", "cas": "9ª CAS", "cas_nome": "CAMPO GRANDE", "endereco": "Rua Cândido Magalhães, 88 – Campo Grande (ponto de referência: próximo ao Colégio Bahiense)", "bairro": "Campo Grande", "cep": "", "email": "creaszildaarns@prefeitura.rio", "responsavel": "Marcelo Jaccoud", "abrangencia": "Campo Grande, Cosmos, Inhoaíba, Santíssimo e Senador Vasconcelos", "id": 69, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6846, -22.9185]}, "properties": {"tipo": "CREAS", "nome": "CREAS PADRE GUILHERME DECAMINADA", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Rua Gabriel Bernardes, s/nº – Santa Cruz", "bairro": "Santa Cruz", "cep": "", "email": "creaspadreguilherme@prefeitura.rio", "responsavel": "Eliane Pixioline", "abrangencia": "Santa Cruz e Sepetiba", "id": 70, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-43.6406, -22.9971]}, "properties": {"tipo": "CREAS", "nome": "CREAS JOÃO MANOEL MONTEIRO", "cas": "10ª CAS", "cas_nome": "SANTA CRUZ", "endereco": "Estrada da Matriz, s/nº – Pedra de Guaratiba (ponto de referência: Administração Regional da Pedra de Guaratiba)", "bairro": "Pedra de Guaratiba", "cep": "", "email": "creasjoaomanoel@prefeitura.rio", "responsavel": "Patrícia Leiras", "abrangencia": "Barra de Guaratiba, Guaratiba, Ilha de Guaratiba, Paciência, Pedra de Guaratiba", "id": 71, "precisao": "Coordenada aproximada por bairro/CAS; revisar por geocodificação oficial."}}];
+const INSS_FEATURES=[{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2815,-22.9017]},"properties":{"tipo":"INSS","nome":"INSS - André Moreira","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Padre André Moreira, 31 - Méier","bairro":"Méier","cep":"","email":"aps.andremoreira@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":72,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1902,-22.9033]},"properties":{"tipo":"INSS","nome":"INSS - Centro","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Marechal Floriano, 199 - Centro","bairro":"Centro","cep":"","email":"apsrct@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":73,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2719,-22.8788]},"properties":{"tipo":"INSS","nome":"INSS - Del Castilho","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Segal, 206 - Del Castilho","bairro":"Del Castilho","cep":"","email":"apsrdc@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":74,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2811,-22.9026]},"properties":{"tipo":"INSS","nome":"INSS - Méier","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Aristides Caire, 218 - Méier","bairro":"Méier","cep":"","email":"apsrme@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":75,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2134,-22.9122]},"properties":{"tipo":"INSS","nome":"INSS - Praça da Bandeira","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Praça da Bandeira, 96 - Praça da Bandeira","bairro":"Praça da Bandeira","cep":"","email":"apsrpb@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":76,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1798,-22.9036]},"properties":{"tipo":"INSS","nome":"INSS - Presidente Vargas","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Presidente Vargas, 418 - Centro","bairro":"Centro","cep":"","email":"apsrpv@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":77,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2186,-22.898]},"properties":{"tipo":"INSS","nome":"INSS - São Cristóvão","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"R. Sen. Alencar, 210 - Imperial de São Cristóvão, Rio de Janeiro - RJ, 20921-430","bairro":"Imperial de São Cristóvão","cep":"","email":"apsrsc@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":78,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2305,-22.9126]},"properties":{"tipo":"INSS","nome":"INSS - Tijuca","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"R. São Francisco Xavier, 324 - Maracanã, Rio de Janeiro - RJ, 20550-013","bairro":"Maracanã","cep":"","email":"apsrtj@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":79,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1769,-22.9086]},"properties":{"tipo":"INSS","nome":"INSS - Almirante Barroso","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Almirante Barroso, 54 - Centro","bairro":"Centro","cep":"","email":"apsrab@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":80,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.5585,-22.9029]},"properties":{"tipo":"INSS","nome":"INSS - Campo Grande","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Engenheiro Trindade, 429 - Campo Grande","bairro":"Campo Grande","cep":"","email":"aps.campogrande@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":81,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1857,-22.8146]},"properties":{"tipo":"INSS","nome":"INSS - Ilha do Governador","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Cacuia - Ilha do Governador","bairro":"Ilha do Governador","cep":"","email":"aps.ilhadogovernador@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":82,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.3232,-22.8339]},"properties":{"tipo":"INSS","nome":"INSS - Avenida Brasil","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Brasil, 17673 - Irajá","bairro":"Irajá","cep":"","email":"aps.avenidabrasil@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":83,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.2554,-22.8498]},"properties":{"tipo":"INSS","nome":"INSS - Ramos","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Joaquim Gomes, 269 - Ramos","bairro":"Ramos","cep":"","email":"aps.ramos@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":84,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.3024,-22.8316]},"properties":{"tipo":"INSS","nome":"INSS - Penha Circular","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Meriti, 2661/A - Brás de Pina","bairro":"Brás de Pina","cep":"","email":"aps.penhacircular@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":85,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.4668,-22.8748]},"properties":{"tipo":"INSS","nome":"INSS - Padre Miguel","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Min. Ary Franco, 410 - Bangu, Rio de Janeiro - RJ, 21862-005","bairro":"Bangu","cep":"","email":"aps.padremiguel@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":87,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.6842,-22.9179]},"properties":{"tipo":"INSS","nome":"INSS - Santa Cruz","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Felipe Cardoso, 18 - Santa Cruz","bairro":"Santa Cruz","cep":"","email":"aps.santacruz@previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":88,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.3126,-23.0064]},"properties":{"tipo":"INSS","nome":"INSS - Barra da Tijuca","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Armando Lombardi, 385 - Barra da Tijuca","bairro":"Barra da Tijuca","cep":"","email":"apsrbtj@rj.previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":89,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1907,-22.9764]},"properties":{"tipo":"INSS","nome":"INSS - Copacabana","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Av. Nossa Senhora de Copacabana, 1049 - Copacabana","bairro":"Copacabana","cep":"","email":"apsrcop@rj.previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":90,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.1952,-22.9364]},"properties":{"tipo":"INSS","nome":"INSS - Cosme Velho","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua das Laranjeiras, 430 - Cosme Velho","bairro":"Cosme Velho","cep":"","email":"apsrlr@rj.previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":91,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}},{"type":"Feature","geometry":{"type":"Point","coordinates":[-43.3521,-22.8953]},"properties":{"tipo":"INSS","nome":"INSS - Jacarepaguá","cas":"INSS","cas_nome":"Agência da Previdência Social","endereco":"Rua Barão, 207 - Praça Seca","bairro":"Praça Seca","cep":"","email":"apsrjp@rj.previdencia.gov.br","responsavel":"","abrangencia":"Agência do INSS","id":92,"precisao":"Coordenada informada pelo usuário; recomenda-se validação oficial antes de uso técnico."}}];
+FEATURES.push(...INSS_FEATURES);
+const TYPE_COLORS={CAS:'#F97316',CRAS:'#FACC15',CREAS:'#DC2626',INSS:'#5B2C83',CADRIO:'#808080',ALBERGUE:'#FF69B4',CONSELHO_TUTELAR:'#000000',URS:'#0066FF',CENTRO_POP:'#00AA00',CENTRAIS:'#8B4513'};
+const CAS_COLORS={"1ª CAS": "#2563EB", "2ª CAS": "#16A34A", "3ª CAS": "#F97316", "4ª CAS": "#DC2626", "5ª CAS": "#7C3AED", "6ª CAS": "#0891B2", "7ª CAS": "#CA8A04", "8ª CAS": "#92400E", "9ª CAS": "#DB2777", "10ª CAS": "#475569"};
+const map=L.map('map',{zoomControl:true,minZoom:10,maxZoom:17,preferCanvas:true}).setView([-22.91,-43.39],10);
+map.setMaxBounds([[-23.12,-43.83],[-22.70,-43.05]]);
+const baseMap = L.tileLayer(
+  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
+    className: 'mapa-base-pb'
+  }
+).addTo(map);
+const layers={CAS:L.layerGroup().addTo(map),CRAS:L.layerGroup().addTo(map),CREAS:L.layerGroup().addTo(map),INSS:L.layerGroup().addTo(map)};
+const markers=[];
+function escapeHtml(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function splitList(s){return String(s||'').split(/,|;| e /).map(x=>x.trim()).filter(Boolean).slice(0,60)}
+function markerStyle(p){let size=p.tipo==='CAS'?18:(p.tipo==='INSS'?14:12);let color=TYPE_COLORS[p.tipo];return {radius:size/2,color:'#fff',weight:2,fillColor:color,fillOpacity:.92,opacity:1};}
+function showDetails(p){document.getElementById('drawer').classList.add('open');const type=document.getElementById('drawerType');type.textContent=p.tipo;type.style.background=TYPE_COLORS[p.tipo];document.getElementById('drawerTitle').textContent=p.nome;let abrang=splitList(p.abrangencia);const vinculo=p.tipo==='INSS'?'Agência do INSS':`${escapeHtml(p.cas)} — ${escapeHtml(p.cas_nome)}`;const vinculoTitulo=p.tipo==='INSS'?'Tipo de equipamento':'CAS responsável';document.getElementById('drawerBody').innerHTML=`<div class="field"><b>${vinculoTitulo}</b><div>${vinculo}</div></div><div class="field"><b>Endereço</b><div>${escapeHtml(p.endereco)||'<span class="muted">Não informado</span>'}</div></div><div class="field"><b>Bairro</b><div>${escapeHtml(p.bairro)||'<span class="muted">Não identificado</span>'}</div></div><div class="field"><b>E-mail</b><div>${escapeHtml(p.email)||'<span class="muted">Não informado</span>'}</div></div>${p.tipo==='INSS'?'':`<div class="field"><b>Responsável</b><div>${escapeHtml(p.responsavel)||'<span class="muted">Não informado</span>'}</div></div><div class="field"><b>Abrangência</b><div>${abrang.length?'<ul class="list">'+abrang.map(x=>`<li>${escapeHtml(x)}</li>`).join('')+'</ul>':'<span class="muted">Não informada</span>'}</div></div>`}<div class="field"><b>Observação técnica</b><div class="muted">${escapeHtml(p.precisao)}</div></div>`;}
+function addMarker(f){const p=f.properties; const [lon,lat]=f.geometry.coordinates; const m=L.circleMarker([lat,lon],markerStyle(p)).bindTooltip(p.nome,{className:'tooltip-clean',direction:'top'});m.on('click',()=>showDetails(p));m._props=p;m.addTo(layers[p.tipo]);markers.push(m); if(p.tipo==='CAS'){m.bindTooltip(p.cas,{permanent:true,className:'label-cas',direction:'right',offset:[10,0]});}}
+FEATURES.forEach(addMarker);
+const casGrid=document.getElementById('casGrid');let selectedCas='TODAS';['TODAS','1ª CAS','2ª CAS','3ª CAS','4ª CAS','5ª CAS','6ª CAS','7ª CAS','8ª CAS','9ª CAS','10ª CAS'].forEach(c=>{const b=document.createElement('button');b.className='cas-btn'+(c==='TODAS'?' active':'');b.textContent=c;b.onclick=()=>{selectedCas=c;document.querySelectorAll('.cas-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');applyFilters();};casGrid.appendChild(b);});
+document.querySelectorAll('input[data-type]').forEach(cb=>cb.addEventListener('change',applyFilters));
+function applyFilters(){const enabled={};document.querySelectorAll('input[data-type]').forEach(cb=>enabled[cb.dataset.type]=cb.checked);Object.values(layers).forEach(l=>l.clearLayers());markers.forEach(m=>{const p=m._props;const casOk=(selectedCas==='TODAS'||p.tipo==='INSS'||p.cas===selectedCas);if(enabled[p.tipo]&&casOk){m.setStyle(markerStyle(p));m.addTo(layers[p.tipo]);}});}
+function focusMarker(m){const p=m._props;map.setView(m.getLatLng(),14,{animate:true});showDetails(p);m.setStyle({...markerStyle(p),radius:(p.tipo==='CAS'?12:(p.tipo==='INSS'?11:10)),fillOpacity:1});setTimeout(()=>m.setStyle(markerStyle(p)),1200);}
+const input=document.getElementById('searchInput'), results=document.getElementById('results');
+input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();results.innerHTML='';if(q.length<2){results.style.display='none';return;}const found=markers.filter(m=>{const p=m._props;return [p.nome,p.tipo,p.cas,p.cas_nome,p.bairro,p.endereco,p.abrangencia].join(' ').toLowerCase().includes(q)}).slice(0,10);found.forEach(m=>{const p=m._props;const div=document.createElement('div');div.className='result';div.innerHTML=`<b>${escapeHtml(p.nome)}</b><p>${escapeHtml(p.tipo)}${p.cas?' · '+escapeHtml(p.cas):''} · ${escapeHtml(p.bairro||p.cas_nome||'')}</p>`;div.onclick=()=>{results.style.display='none';input.value=p.nome;focusMarker(m)};results.appendChild(div);});results.style.display=found.length?'block':'none';});
+document.getElementById('closeDrawer').onclick=()=>document.getElementById('drawer').classList.remove('open');
+map.on('click',()=>{results.style.display='none'});
+</script>
+<!-- =========================================================
+BLOCO NOVAS CAMADAS SMAS-RIO
+
+Ele adiciona: ALBERGUE, CADRIO, CONSELHO TUTELAR, URS e CENTRO POP.
+Inclui pontos com latitude/longitude, filtros, legenda e atualização do contador.
+========================================================= -->
+
+<script>
+(function(){
+  if (window.__NOVAS_CAMADAS_SMAS_RIO_V3__) {
+    console.warn('Novas camadas SMAS-Rio já foram carregadas. Remova blocos duplicados do final do HTML.');
+    return;
+  }
+  window.__NOVAS_CAMADAS_SMAS_RIO_V3__ = true;
+
+  const NOVOS_EQUIPAMENTOS = [
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1809,
+        -22.9136
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE ALFONSO LAVALLE (idosos misto)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Mem de Sá, nº 85",
+      "bairro": "LAPA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1000,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1902,
+        -22.9099
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE HERBERT DE SOUZA (masculino adulto)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua do Senado, nº 274",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1001,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1945,
+        -22.9103
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE NISE DA SILVEIRA (masculino adulto)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua General Caldwell, nº 297",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1002,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1813,
+        -22.8978
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE MARTIN LUTHER KING JR (masculino adulto)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Sacadura Cabral, nº 43",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1003,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1847,
+        -22.8983
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE DAVID MIRANDA (LGBTQIA+) - adultos",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Tenente Possolo, nº 49",
+      "bairro": "SAÚDE",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1004,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2179,
+        -22.9237
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE DERCY GONÇALVES (Homens Adultos)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Haddock Lobo, nº 326",
+      "bairro": "TIJUCA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1005,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4378,
+        -22.8696
+      ]
+    },
+    "properties": {
+      "tipo": "ALBERGUE",
+      "nome": "ALBERGUE REALENGO (adultos masculino)",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Brasil, nº 28.650",
+      "bairro": "REALENGO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1006,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1795,
+        -22.9066
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO CENTRO",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua da Carioca, nº 58",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1007,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.267,
+        -22.999
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO RINALDO DE LAMARE",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Niemeyer, nº 776 - 8º e 9º andar",
+      "bairro": "SÃO CONRADO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1008,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2828,
+        -22.8879
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO - GRANDE MÉIER",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Dom Hélder Câmara, nº 5474 (cobertura do Norte Shopping - salas 3004 e 3005)",
+      "bairro": "CACHAMBI",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1009,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2909,
+        -22.8429
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO PENHA",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Leopoldina Rego, nº 754",
+      "bairro": "PENHA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1010,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3391,
+        -22.87
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO - MADUREIRA",
+      "cas": "5ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Ministro Edgard Romero, nº 400 - Térreo",
+      "bairro": "MADUREIRA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1011,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.315,
+        -22.8428
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO IRAJÁ",
+      "cas": "6ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Meriti, nº 203 (Largo do Bicão)",
+      "bairro": "VILA DA PENHA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1012,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3662,
+        -22.9876
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO BARRA/JACAREPAGUÁ",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Ayrton Senna, nº 2541 (Aerotown)",
+      "bairro": "BARRA DA TIJUCA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1013,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4679,
+        -22.8785
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO - BANGU",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Silva Cardoso, nº 349 - Fundos",
+      "bairro": "BANGU",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1014,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.5574,
+        -22.9047
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO CAMPO GRANDE",
+      "cas": "9ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Viúva Dantas, nº 61",
+      "bairro": "CAMPO GRANDE",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1015,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.6846,
+        -22.9185
+      ]
+    },
+    "properties": {
+      "tipo": "CADRIO",
+      "nome": "CENTRAL CADRIO - SANTA CRUZ",
+      "cas": "10ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Fernanda, nº 155",
+      "bairro": "SANTA CRUZ",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1016,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1729,
+        -22.9068
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 01 - CENTRO",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua República do Líbano, nº 54",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1017,
+      "precisao": "reaproveitada do SIG para mesmo endereço aproximado"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1848,
+        -22.9343
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 02 - ZONA SUL",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua São Salvador, nº 56",
+      "bairro": "ZONA SUL",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1018,
+      "precisao": "reaproveitada do SIG para mesmo endereço aproximado"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2373,
+        -22.9268
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 03 - VILA ISABEL",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Desembargador Isidro, nº 48",
+      "bairro": "VILA ISABEL",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1019,
+      "precisao": "reaproveitada do SIG para mesmo endereço aproximado"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2677,
+        -22.9028
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 04 - MÉIER",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua 24 de Maio, nº 931 - 2º andar",
+      "bairro": "MÉIER",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1020,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2849,
+        -22.8758
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 14 - INHAÚMA",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada Adhemar Bebiano, nº 3151",
+      "bairro": "INHAÚMA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1021,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.255,
+        -22.852
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 05 - RAMOS",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Professor Lacê, nº 57",
+      "bairro": "RAMOS",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1022,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2539,
+        -22.862
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 11 - BONSUCESSO",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua da Regeneração, nº 654",
+      "bairro": "BONSUCESSO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1023,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2034,
+        -22.8001
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 19 - ILHA DO GOVERNADOR",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Paranapuã, nº 941",
+      "bairro": "ILHA DO GOVERNADOR",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1024,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3391,
+        -22.87
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 06 - MADUREIRA",
+      "cas": "5ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Ministro Edgard Romero, nº 400 - 2º andar",
+      "bairro": "MADUREIRA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1025,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.35,
+        -22.8317
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 12 - COELHO NETO",
+      "cas": "5ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Brasil, s/n (CIEP Antonio Candeia Filho)",
+      "bairro": "COELHO NETO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1026,
+      "precisao": "aproximada por bairro/equipamento próximo no SIG"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4023,
+        -22.9401
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 07 - JACAREPAGUÁ",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada Rodrigues Caldas, nº 3400 - sala 204",
+      "bairro": "JACAREPAGUÁ",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1027,
+      "precisao": "aproximada por bairro/endereço próximo no SIG"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4417,
+        -23.003
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 16 - BARRA / RECREIO",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Rosalina Brand, nº 200",
+      "bairro": "BARRA / RECREIO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1028,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3859,
+        -22.9168
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 18 - TAQUARA",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada do Tindiba, nº 2527",
+      "bairro": "TAQUARA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1029,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4679,
+        -22.8785
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 08 - BANGU",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Silva Cardoso, nº 349 - salas 08 e 09",
+      "bairro": "BANGU",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1030,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.43,
+        -22.8812
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 17 - REALENGO",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Estr. do Engenho Novo, s/n (CIEP Thomas Jefferson)",
+      "bairro": "REALENGO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1031,
+      "precisao": "aproximada por bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.5591,
+        -22.9074
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 09 - CAMPO GRANDE",
+      "cas": "9ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Carlos da Silva Costa, nº 32",
+      "bairro": "CAMPO GRANDE",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1032,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.686,
+        -22.9182
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 10 - SANTA CRUZ",
+      "cas": "10ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Lopes Moura, nº 58",
+      "bairro": "SANTA CRUZ",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1033,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.5871,
+        -22.9945
+      ]
+    },
+    "properties": {
+      "tipo": "CONSELHO_TUTELAR",
+      "nome": "CONSELHO TUTELAR 15 - GUARATIBA",
+      "cas": "10ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Pedra Bela, nº 435",
+      "bairro": "GUARATIBA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1034,
+      "precisao": "reaproveitada do SIG para bairro Guaratiba"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1729,
+        -22.9068
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS DOM HÉLDER CÂMARA (adolescente masculino)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Benedito Hipólito, nº 163 (Praça Onze)",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1035,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2096,
+        -22.9257
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS IRMÃ DULCE (adulto feminino)",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Visconde de Jequitinhonha, nº 50",
+      "bairro": "RIO COMPRIDO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1036,
+      "precisao": "reaproveitada do SIG para bairro Rio Comprido"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1848,
+        -22.9343
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS ANA CAROLINA (bebês de 0 a 4 anos)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Pinheiro Machado, nº 39",
+      "bairro": "LARANJEIRAS",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1037,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2134,
+        -22.9122
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS RAUL SEIXAS (adolescente masculino de 12 a 17 anos)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Teixeira Soares, nº 43",
+      "bairro": "PRAÇA DA BANDEIRA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1038,
+      "precisao": "reaproveitada do SIG para bairro Praça da Bandeira"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1848,
+        -22.9343
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS BIA BEDRAN (crianças de 4 a 9 anos e grupo de irmãos)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Pinheiro Machado, nº 39 - casa 1",
+      "bairro": "LARANJEIRAS",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1039,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1776,
+        -22.9274
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS CATETE (adolescente feminino)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua do Catete, nº 195",
+      "bairro": "CATETE",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1040,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2356,
+        -22.9261
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS LUCINHA ARAUJO (crianças de 06 a 12 anos)",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Cotingo, nº 76 (próximo Hosp.Ordem Terceira)",
+      "bairro": "TIJUCA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1041,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2818,
+        -22.9029
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS ZIRALDO (crianças de 04 a 12 anos misto)",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Isolina, nº 308",
+      "bairro": "MÉIER",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1042,
+      "precisao": "reaproveitada do SIG para Méier"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2705,
+        -22.9058
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS FRIDA KAHLO (adolescentes gestantes e puérperas)",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Senador Jaguaribe, nº 40 (em frente ao Lar Anália Franco)",
+      "bairro": "ENGENHO NOVO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1043,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2768,
+        -22.887
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS ANGELICA GOULART (adolescente masculino)",
+      "cas": "3ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Honório, nº 1996",
+      "bairro": "CACHAMBI",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1044,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2435,
+        -22.8091
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS ILHA DO GOVERNADOR (adultos misto)",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada dos Maracajás, nº 973",
+      "bairro": "ILHA DO GOVERNADOR",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1045,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2635,
+        -22.8475
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS CASA VIVA – PENHA (adolescente feminino)",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Bariri, nº 258",
+      "bairro": "OLARIA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1046,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3397,
+        -22.9552
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS SOCIAL CELY CAMPELLO (adolescente masculino)",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Almirante Felinto Perry, nº 164",
+      "bairro": "ANIL",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1047,
+      "precisao": "reaproveitada do SIG para bairro Anil"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3925,
+        -22.9238
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS SOCIAL MARIA TEREZA VIEIRA (famílias)",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada do Rio Grande, nº 2561",
+      "bairro": "TAQUARA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1048,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4707,
+        -23.0181
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS MARIA VIEIRA BAZANI (idosos misto)",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Teotônio Vilela, s/n",
+      "bairro": "RECREIO DOS BANDEIRANTES",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1049,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.3844,
+        -22.9196
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS HAROLDO COSTA (idosos e adultos)",
+      "cas": "7ª CAS",
+      "cas_nome": "",
+      "endereco": "Estrada do Engenho Velho, nº 1075 (próximo a Praça Valdir Vieira)",
+      "bairro": "TAQUARA",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1050,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4655,
+        -22.8801
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS CASA VIVA – BANGU (adolescente masculino)",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Cônego de Vasconcelos, nº 856",
+      "bairro": "BANGU",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1051,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.488,
+        -22.8735
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS DINA SFAT (idosos misto)",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Três Marias, s/n (Catiri)",
+      "bairro": "BANGU",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1052,
+      "precisao": "aproximada por bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4717,
+        -22.8782
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS PROFESSORA NILDA NEY (idosos misto)",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Senador Joaquim Pires, nº 115 (próximo a Creche Gente Inocente)",
+      "bairro": "BANGU",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1053,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.4295,
+        -22.8758
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS REALENGO (adultos masculino)",
+      "cas": "8ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Professor Carlos Wenceslau, nº 211 (próximo ao Corpo de Bombeiros)",
+      "bairro": "REALENGO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1054,
+      "precisao": "aproximada por endereço/bairro"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.5585,
+        -22.9035
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS PAULO FREIRE (adolescentes masculinos)",
+      "cas": "9ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua Torricelli, nº 61",
+      "bairro": "CAMPO GRANDE",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1055,
+      "precisao": "reaproveitada do SIG para Campo Grande"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.6358,
+        -22.9001
+      ]
+    },
+    "properties": {
+      "tipo": "URS",
+      "nome": "URS RIO ACOLHEDOR PACIÊNCIA (adulto misto)",
+      "cas": "10ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Hermínio Aurélio Sampaio, nº 105",
+      "bairro": "SANTA CRUZ",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1056,
+      "precisao": "reaproveitada do SIG para região Paciência/Santa Cruz"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.1729,
+        -22.9068
+      ]
+    },
+    "properties": {
+      "tipo": "CENTRO_POP",
+      "nome": "CENTRO POP – CENTRO POP BÁRBARA CALAZANS",
+      "cas": "1ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua República do Líbano, nº 54",
+      "bairro": "CENTRO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1057,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.267,
+        -22.999
+      ]
+    },
+    "properties": {
+      "tipo": "CENTRO_POP",
+      "nome": "CENTRO DE CIDADANIA RINALDO DE LAMARE",
+      "cas": "2ª CAS",
+      "cas_nome": "",
+      "endereco": "Av. Niemeyer, nº 776",
+      "bairro": "SÃO CONRADO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1058,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -43.2539,
+        -22.862
+      ]
+    },
+    "properties": {
+      "tipo": "CENTRO_POP",
+      "nome": "CENTRO POP JOSÉ SARAMAGO",
+      "cas": "4ª CAS",
+      "cas_nome": "",
+      "endereco": "Rua da Regeneração, nº 654",
+      "bairro": "BONSUCESSO",
+      "cep": "",
+      "email": "",
+      "responsavel": "",
+      "abrangencia": "",
+      "id": 1059,
+      "precisao": "reaproveitada do SIG para mesmo endereço"
+    }
+  }
+];
+
+  const NOVAS_CORES = {
+    ALBERGUE: '#FF69B4',
+    CADRIO: '#808080',
+    CONSELHO_TUTELAR: '#000000',
+    URS: '#0066FF',
+    CENTRO_POP: '#00AA00',
+    CENTRAIS: '#8B4513'
+  };
+
+  const ROTULOS = {
+    ALBERGUE: 'Albergues',
+    CADRIO: 'CADRio',
+    CONSELHO_TUTELAR: 'Conselho Tutelar',
+    URS: 'URS',
+    CENTRO_POP: 'Centro POP',
+    CENTRAIS: 'Centrais'
+  };
+
+  if (typeof map === 'undefined' || typeof L === 'undefined') {
+    console.error('Mapa Leaflet não encontrado. Cole este bloco depois do script principal do mapa.');
+    return;
+  }
+
+  if (typeof TYPE_COLORS !== 'undefined') {
+    Object.assign(TYPE_COLORS, NOVAS_CORES);
+  } else {
+    window.TYPE_COLORS = Object.assign({}, NOVAS_CORES);
+  }
+
+  if (typeof layers === 'undefined') {
+    window.layers = {};
+  }
+
+  Object.keys(NOVAS_CORES).forEach(function(tipo){
+    if (!layers[tipo]) {
+      layers[tipo] = L.layerGroup().addTo(map);
+    }
+  });
+
+  // Evita duplicidade caso algum item já exista no FEATURES.
+  const idsExistentes = new Set((typeof FEATURES !== 'undefined' ? FEATURES : []).map(function(f){
+    return String((f.properties && f.properties.tipo) || '') + '|' + String((f.properties && f.properties.nome) || '');
+  }));
+
+  const novosValidos = NOVOS_EQUIPAMENTOS.filter(function(f){
+    const p = f.properties || {};
+    const c = f.geometry && f.geometry.coordinates;
+    return p.nome && p.tipo && Array.isArray(c) && Number.isFinite(c[0]) && Number.isFinite(c[1]);
+  }).filter(function(f){
+    const key = String(f.properties.tipo) + '|' + String(f.properties.nome);
+    if (idsExistentes.has(key)) return false;
+    idsExistentes.add(key);
+    return true;
+  });
+
+  if (typeof FEATURES !== 'undefined') {
+    FEATURES.push.apply(FEATURES, novosValidos);
+  }
+
+  function estiloNovo(p){
+    const cor = (typeof TYPE_COLORS !== 'undefined' && TYPE_COLORS[p.tipo]) ? TYPE_COLORS[p.tipo] : '#334155';
+    return {
+      radius: 7,
+      color: '#fff',
+      weight: 2,
+      fillColor: cor,
+      fillOpacity: .94,
+      opacity: 1
+    };
+  }
+
+  function abrirDetalhesNovo(p){
+    if (typeof showDetails === 'function') {
+      showDetails(p);
+      return;
+    }
+    alert((p.tipo || '') + '\n' + (p.nome || '') + '\n' + (p.endereco || ''));
+  }
+
+  function adicionarMarcadorNovo(f){
+    const p = f.properties;
+    const coords = f.geometry.coordinates;
+    const lon = coords[0];
+    const lat = coords[1];
+
+    const m = L.circleMarker([lat, lon], estiloNovo(p))
+      .bindTooltip(p.nome, {
+        className: 'tooltip-clean',
+        direction: 'top'
+      });
+
+    m.on('click', function(){
+      abrirDetalhesNovo(p);
+    });
+
+    m._props = p;
+
+    if (!layers[p.tipo]) {
+      layers[p.tipo] = L.layerGroup().addTo(map);
+    }
+
+    m.addTo(layers[p.tipo]);
+
+    if (typeof markers !== 'undefined') {
+      markers.push(m);
+    }
+  }
+
+  novosValidos.forEach(function(f){
+    // Usa o addMarker original quando possível; se falhar, usa marcador próprio.
+    try {
+      if (typeof addMarker === 'function') {
+        addMarker(f);
+      } else {
+        adicionarMarcadorNovo(f);
+      }
+    } catch(e) {
+      adicionarMarcadorNovo(f);
+    }
+  });
+
+  // Adiciona checkboxes das novas camadas no menu esquerdo.
+  const primeiraSecao = document.querySelector('.sidebar .section');
+  if (primeiraSecao) {
+    Object.keys(NOVAS_CORES).forEach(function(tipo){
+      if (tipo === 'CENTRAIS') return; // sem pontos informados nesta lista
+      if (primeiraSecao.querySelector('input[data-type="' + tipo + '"]')) return;
+
+      const div = document.createElement('div');
+      div.className = 'check';
+      div.innerHTML =
+        '<label>' +
+          '<input type="checkbox" data-type="' + tipo + '" checked>' +
+          '<span><i class="dot" style="background:' + NOVAS_CORES[tipo] + '"></i> ' + ROTULOS[tipo] + '</span>' +
+        '</label>';
+
+      primeiraSecao.appendChild(div);
+
+      const cb = div.querySelector('input');
+      cb.addEventListener('change', function(){
+        if (typeof applyFilters === 'function') {
+          applyFilters();
+        } else {
+          if (cb.checked) map.addLayer(layers[tipo]);
+          else map.removeLayer(layers[tipo]);
+        }
+      });
+    });
+  }
+
+  // Adiciona itens na legenda.
+  const legenda = document.querySelector('.legend-row');
+  if (legenda) {
+    Object.keys(NOVAS_CORES).forEach(function(tipo){
+      if (tipo === 'CENTRAIS') return;
+      if (legenda.querySelector('[data-legend-type="' + tipo + '"]')) return;
+
+      const span = document.createElement('span');
+      span.setAttribute('data-legend-type', tipo);
+      span.innerHTML = '<i class="dot" style="background:' + NOVAS_CORES[tipo] + '"></i> ' + ROTULOS[tipo];
+      legenda.appendChild(span);
+    });
+  }
+
+  // Atualiza o contador da barra superior.
+  function atualizarContadores(){
+    const stats = document.querySelector('.stats');
+    if (!stats || typeof FEATURES === 'undefined') return;
+
+    const ordem = ['CAS','CRAS','CREAS','INSS','ALBERGUE','CADRIO','CONSELHO_TUTELAR','URS','CENTRO_POP'];
+    const contagem = {};
+
+    FEATURES.forEach(function(f){
+      const tipo = f.properties && f.properties.tipo;
+      if (!tipo) return;
+      contagem[tipo] = (contagem[tipo] || 0) + 1;
+    });
+
+    stats.innerHTML = ordem
+      .filter(function(tipo){ return contagem[tipo] > 0; })
+      .map(function(tipo){
+        const rotulo = ROTULOS[tipo] || tipo;
+        return '<span class="pill"><b>' + contagem[tipo] + '</b> ' + rotulo + '</span>';
+      })
+      .join('');
+  }
+
+  atualizarContadores();
+
+  /*
+    CORREÇÃO DOS FILTROS DAS NOVAS CAMADAS
+    Este trecho substitui a lógica original de filtragem por uma versão ampliada.
+    Assim, ALBERGUE, CADRIO, CONSELHO_TUTELAR, URS e CENTRO_POP passam a se comportar
+    exatamente como CAS, CRAS, CREAS e INSS: ao desmarcar, somem do mapa; ao marcar, voltam.
+  */
+  function estiloAmpliado(p){
+    if (typeof markerStyle === 'function' && ['CAS','CRAS','CREAS','INSS'].includes(p.tipo)) {
+      return markerStyle(p);
+    }
+
+    const cor = (typeof TYPE_COLORS !== 'undefined' && TYPE_COLORS[p.tipo])
+      ? TYPE_COLORS[p.tipo]
+      : (NOVAS_CORES[p.tipo] || '#334155');
+
+    return {
+      radius: p.tipo === 'CADRIO' ? 7 : 7,
+      color: '#fff',
+      weight: 2,
+      fillColor: cor,
+      fillOpacity: .94,
+      opacity: 1
+    };
+  }
+
+
+  function normalizarCas(valor){
+    return String(valor || '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toUpperCase();
+  }
+
+  function obterCasSelecionada(){
+    /*
+      O arquivo original guarda selectedCas dentro do primeiro <script>.
+      Em alguns navegadores/versões, esse valor não fica acessível ao bloco colado no final.
+      Por isso, a fonte mais segura passa a ser o botão ativo em "Filtrar por CAS".
+    */
+    const ativo = document.querySelector('.cas-btn.active');
+    if (ativo && ativo.textContent) return ativo.textContent.trim();
+
+    try {
+      if (typeof selectedCas !== 'undefined') return selectedCas;
+    } catch(e) {}
+
+    return 'TODAS';
+  }
+
+  function aplicarFiltrosAmpliados(){
+    if (typeof layers === 'undefined' || typeof markers === 'undefined') return;
+
+    const enabled = {};
+    document.querySelectorAll('input[data-type]').forEach(function(cb){
+      enabled[cb.dataset.type] = cb.checked;
+    });
+
+    Object.keys(layers).forEach(function(tipo){
+      if (layers[tipo] && typeof layers[tipo].clearLayers === 'function') {
+        layers[tipo].clearLayers();
+      }
+    });
+
+    markers.forEach(function(m){
+      const p = m._props || {};
+      if (!p.tipo || !layers[p.tipo]) return;
+
+      const casSelecionada = obterCasSelecionada();
+      const casOk = (
+        casSelecionada === 'TODAS' ||
+        p.tipo === 'INSS' ||
+        normalizarCas(p.cas) === normalizarCas(casSelecionada)
+      );
+
+      if (enabled[p.tipo] && casOk) {
+        if (typeof m.setStyle === 'function') {
+          m.setStyle(estiloAmpliado(p));
+        }
+        m.addTo(layers[p.tipo]);
+      }
+    });
+  }
+
+  try {
+    applyFilters = aplicarFiltrosAmpliados;
+  } catch(e) {
+    window.applyFilters = aplicarFiltrosAmpliados;
+  }
+
+  document.querySelectorAll('input[data-type]').forEach(function(cb){
+    cb.addEventListener('change', aplicarFiltrosAmpliados);
+  });
+
+  document.querySelectorAll('.cas-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      setTimeout(aplicarFiltrosAmpliados, 0);
+    });
+  });
+
+  aplicarFiltrosAmpliados();
+
+  console.log('Novas camadas SMAS-Rio carregadas com filtros CAS corrigidos:', novosValidos.length, 'equipamentos.');
+})();
+</script>
+<!-- CORREÇÃO DO FILTRO POR CAS — NOVAS CAMADAS
+     
+     A correção força todos os pontos novos a obedecerem ao mesmo comportamento dos CAS, CRAS, CREAS e INSS. -->
+
+<script>
+(function(){
+  if (typeof map === 'undefined' || typeof layers === 'undefined' || typeof markers === 'undefined') {
+    console.warn('Mapa, layers ou markers não encontrados. Cole este bloco depois do script principal do mapa.');
+    return;
+  }
+
+  const TIPO_CANONICO = {
+    'ALBERGUES': 'ALBERGUE',
+    'ALBERGUE': 'ALBERGUE',
+    'CADRIO': 'CADRIO',
+    'CADRIO ': 'CADRIO',
+    'CONSELHO TUTELAR': 'CONSELHO_TUTELAR',
+    'CONSELHO_TUTELAR': 'CONSELHO_TUTELAR',
+    'CONTUTELAR': 'CONSELHO_TUTELAR',
+    'URS': 'URS',
+    'CENTRO POP': 'CENTRO_POP',
+    'CENTRO_POP': 'CENTRO_POP',
+    'CENTROPOP': 'CENTRO_POP',
+    'CAS': 'CAS',
+    'CRAS': 'CRAS',
+    'CREAS': 'CREAS',
+    'INSS': 'INSS'
+  };
+
+  const TIPO_LABEL = {
+    CAS: 'CAS',
+    CRAS: 'CRAS',
+    CREAS: 'CREAS',
+    INSS: 'INSS',
+    ALBERGUE: 'Albergues',
+    CADRIO: 'CADRio',
+    CONSELHO_TUTELAR: 'Conselho Tutelar',
+    URS: 'URS',
+    CENTRO_POP: 'Centro POP'
+  };
+
+  const CORES = {
+    CAS:'#F97316',
+    CRAS:'#FACC15',
+    CREAS:'#DC2626',
+    INSS:'#5B2C83',
+    ALBERGUE:'#EC4899',
+    CADRIO:'#808080',
+    CONSELHO_TUTELAR:'#000000',
+    URS:'#2563EB',
+    CENTRO_POP:'#16A34A'
+  };
+
+  function normalizarTexto(v){
+    return String(v || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toUpperCase();
+  }
+
+  function normalizarTipo(v){
+    const bruto = String(v || '').trim();
+    const chave = normalizarTexto(bruto).replace(/-/g, ' ');
+    return TIPO_CANONICO[chave] || TIPO_CANONICO[bruto] || bruto.toUpperCase().replace(/\s+/g, '_');
+  }
+
+  function normalizarCAS(v){
+    const s = normalizarTexto(v);
+    if (!s || s === 'TODAS') return 'TODAS';
+    const m = s.match(/(\d{1,2})\s*(?:A|ª|O|º)?\s*CAS/);
+    if (m) return parseInt(m[1], 10) + 'ª CAS';
+    return s;
+  }
+
+  function corTipo(tipo){
+    return CORES[normalizarTipo(tipo)] || '#64748B';
+  }
+
+  window.TYPE_COLORS = Object.assign(window.TYPE_COLORS || {}, CORES);
+
+  function estiloMarcadorCorrigido(p){
+    const tipo = normalizarTipo(p.tipo);
+    const raio = tipo === 'CAS' ? 9 : (tipo === 'INSS' ? 7 : 6);
+    return {
+      radius: raio,
+      color: '#fff',
+      weight: 2,
+      fillColor: corTipo(tipo),
+      fillOpacity: .92,
+      opacity: 1
+    };
+  }
+
+  function garantirCamadas(){
+    markers.forEach(function(m){
+      if (!m || !m._props) return;
+      const tipo = normalizarTipo(m._props.tipo);
+      m._props.tipo = tipo;
+      if (!layers[tipo]) layers[tipo] = L.layerGroup().addTo(map);
+    });
+  }
+
+  function getCASAtiva(){
+    const ativo = document.querySelector('.cas-btn.active');
+    return normalizarCAS(ativo ? ativo.textContent : 'TODAS');
+  }
+
+  function getTiposHabilitados(){
+    const habilitados = {};
+
+    document.querySelectorAll('input[data-type]').forEach(function(cb){
+      habilitados[normalizarTipo(cb.dataset.type)] = cb.checked;
+    });
+
+    document.querySelectorAll('.check label').forEach(function(label){
+      const cb = label.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const texto = label.textContent || '';
+      const tipo = normalizarTipo(cb.dataset.type || texto);
+      habilitados[tipo] = cb.checked;
+      cb.dataset.type = tipo;
+    });
+
+    return habilitados;
+  }
+
+  function limparTodasAsCamadas(){
+    Object.keys(layers).forEach(function(k){
+      if (layers[k] && typeof layers[k].clearLayers === 'function') {
+        layers[k].clearLayers();
+      }
+    });
+  }
+
+  window.applyFilters = function(){
+    garantirCamadas();
+
+    const casAtiva = getCASAtiva();
+    const habilitados = getTiposHabilitados();
+
+    limparTodasAsCamadas();
+
+    markers.forEach(function(m){
+      if (!m || !m._props) return;
+
+      const p = m._props;
+      const tipo = normalizarTipo(p.tipo);
+      const casDoEquipamento = normalizarCAS(p.cas);
+
+      p.tipo = tipo;
+
+      const camadaLigada = habilitados[tipo] !== false;
+
+      // Mantém a regra original: INSS não pertence a uma CAS específica.
+      // Todos os demais equipamentos, inclusive os novos, obedecem ao filtro por CAS.
+      const casOk = casAtiva === 'TODAS' || tipo === 'INSS' || casDoEquipamento === casAtiva;
+
+      if (camadaLigada && casOk) {
+        if (typeof m.setStyle === 'function') m.setStyle(estiloMarcadorCorrigido(p));
+        if (!layers[tipo]) layers[tipo] = L.layerGroup().addTo(map);
+        m.addTo(layers[tipo]);
+      }
+    });
+  };
+
+  function reconfigurarBotoesCAS(){
+    document.querySelectorAll('.cas-btn').forEach(function(btn){
+      btn.onclick = function(){
+        document.querySelectorAll('.cas-btn').forEach(function(x){ x.classList.remove('active'); });
+        btn.classList.add('active');
+        window.applyFilters();
+      };
+    });
+  }
+
+  function reconfigurarCheckboxes(){
+    document.querySelectorAll('input[data-type]').forEach(function(cb){
+      cb.dataset.type = normalizarTipo(cb.dataset.type);
+      cb.onchange = window.applyFilters;
+    });
+  }
+
+  function atualizarContadoresSuperiores(){
+    const stats = document.querySelector('.stats');
+    if (!stats) return;
+
+    const ordem = ['CAS','CRAS','CREAS','INSS','ALBERGUE','CADRIO','CONSELHO_TUTELAR','URS','CENTRO_POP'];
+    const contagem = {};
+
+    markers.forEach(function(m){
+      if (!m || !m._props) return;
+      const tipo = normalizarTipo(m._props.tipo);
+      contagem[tipo] = (contagem[tipo] || 0) + 1;
+    });
+
+    stats.innerHTML = ordem
+      .filter(function(tipo){ return contagem[tipo]; })
+      .map(function(tipo){
+        return '<span class="pill"><b>' + contagem[tipo] + '</b> ' + TIPO_LABEL[tipo] + '</span>';
+      })
+      .join('');
+  }
+
+  function corrigirDrawerCores(){
+    const originalShowDetails = window.showDetails;
+    if (typeof originalShowDetails !== 'function') return;
+
+    window.showDetails = function(p){
+      p.tipo = normalizarTipo(p.tipo);
+      originalShowDetails(p);
+      const type = document.getElementById('drawerType');
+      if (type) type.style.background = corTipo(p.tipo);
+    };
+  }
+
+  garantirCamadas();
+  reconfigurarBotoesCAS();
+  reconfigurarCheckboxes();
+  atualizarContadoresSuperiores();
+  corrigirDrawerCores();
+  window.applyFilters();
+})();
+</script>
+
+
+</body></html>
+
+
+
+
+
+
+
+
+<style>
+/* MELHORIAS MOBILE */
+  
+@media (max-width: 768px){
+
+  #map{
+    inset:56px 0 0 0 !important;
+    width:100vw !important;
+    height:calc(100vh - 56px) !important;
+  }
+
+  .topbar{
+    height:56px !important;
+    padding:0 10px !important;
+    gap:8px !important;
+  }
+
+  .brand{
+    min-width:0 !important;
+  }
+
+  .brand-mark{
+    width:34px !important;
+    height:34px !important;
+    border-radius:10px !important;
+    font-size:12px !important;
+  }
+
+  .brand h1{
+    font-size:13px !important;
+    max-width:210px !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  .brand p,
+  .stats,
+  .footer-badge{
+    display:none !important;
+  }
+
+  .sidebar{
+    position:absolute !important;
+    left:10px !important;
+    right:10px !important;
+    top:66px !important;
+    width:auto !important;
+    max-height:38vh !important;
+    border-radius:16px !important;
+    overflow:auto !important;
+    display:none;
+  }
+
+  .sidebar.mobile-open{
+    display:block !important;
+    z-index:6000 !important;
+  }
+
+  .drawer{
+    position:absolute !important;
+    left:10px !important;
+    right:10px !important;
+    top:auto !important;
+    bottom:10px !important;
+    width:auto !important;
+    max-width:none !important;
+    max-height:58vh !important;
+    border-radius:20px 20px 16px 16px !important;
+    transform:translateY(calc(100% + 30px)) !important;
+    z-index:7000 !important;
+  }
+
+  .drawer.open{
+    transform:translateY(0) !important;
+  }
+
+  .drawer-head{
+    padding:16px 48px 12px 16px !important;
+  }
+
+  .drawer-head h3{
+    font-size:17px !important;
+  }
+
+  .drawer-body{
+    max-height:calc(58vh - 92px) !important;
+    padding:14px 16px 18px !important;
+  }
+
+  .close{
+    width:42px !important;
+    height:42px !important;
+    font-size:24px !important;
+  }
+
+  .leaflet-control-zoom a{
+    width:42px !important;
+    height:42px !important;
+    line-height:42px !important;
+    font-size:22px !important;
+  }
+
+  .leaflet-marker-icon{
+    transform:scale(1.08);
+  }
+}
+
+.mobile-layer-btn{
+  display:none;
+}
+
+@media (max-width: 768px){
+  .mobile-layer-btn{
+    display:block;
+    position:absolute;
+    z-index:6500;
+    left:12px;
+    bottom:18px;
+    border:0;
+    background:#0f172a;
+    color:#fff;
+    border-radius:999px;
+    padding:12px 16px;
+    font-weight:700;
+    box-shadow:0 12px 30px rgba(15,23,42,.25);
+  }
+
+  .drawer.open ~ .mobile-layer-btn{
+    display:none;
+  }
+}
+</style>
+
+<script>
+(function(){
+  const sidebar = document.querySelector('.sidebar');
+  const mapEl = document.getElementById('map');
+
+  if(!sidebar || !mapEl) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'mobile-layer-btn';
+  btn.innerHTML = '☰ Camadas';
+
+  document.body.appendChild(btn);
+
+  btn.addEventListener('click', function(){
+    sidebar.classList.toggle('mobile-open');
+  });
+
+  mapEl.addEventListener('click', function(){
+    sidebar.classList.remove('mobile-open');
+  });
+
+  window.addEventListener('resize', function(){
+    if(window.innerWidth > 768){
+      sidebar.classList.remove('mobile-open');
+    }
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+/* ============================================================
+   TERRITÓRIOS DAS 10 CAS
+   MALHA OFICIAL DE BAIRROS DA PREFEITURA DO RIO
+   + AGRUPAMENTO CONFORME A PLANILHA DO PROJETO
+
+=============================================================== */
+
+(function () {
+
+  if (window.__TERRITORIOS_CAS_OFICIAL_V1__) {
+    console.warn("Territórios CAS já carregados.");
+    return;
+  }
+
+  window.__TERRITORIOS_CAS_OFICIAL_V1__ = true;
+
+
+  /* ============================================================
+     1. AGUARDA O MAPA PRINCIPAL EXISTIR
+  ============================================================ */
+
+  function iniciarTerritoriosCAS() {
+
+    if (
+      typeof L === "undefined" ||
+      typeof map === "undefined"
+    ) {
+      setTimeout(iniciarTerritoriosCAS, 300);
+      return;
+    }
+
+
+    /* ==========================================================
+       2. REMOVE EVENTUAIS CAMADAS DOS TESTES ANTERIORES
+    ========================================================== */
+
+    [
+      "camadaTerritoriosCAS",
+      "casAreaGroup",
+      "grupoTerritoriosCAS",
+      "camadaGeoCAS"
+    ].forEach(function (nome) {
+
+      try {
+
+        const camada = window[nome];
+
+        if (
+          camada &&
+          typeof map.hasLayer === "function" &&
+          map.hasLayer(camada)
+        ) {
+          map.removeLayer(camada);
+        }
+
+      } catch (e) {}
+
+    });
+
+
+    /* ==========================================================
+       3. CORES DAS CAS
+       Inspiradas no mapa físico da SMAS
+    ========================================================== */
+
+    const CORES_CAS = {
+
+      "1ª CAS":  "#EEE99A",
+
+      "2ª CAS":  "#DCE7E6",
+
+      "3ª CAS":  "#DDE5A8",
+
+      "4ª CAS":  "#D6A29D",
+
+      "5ª CAS":  "#D3B547",
+
+      "6ª CAS":  "#C6B5C5",
+
+      "7ª CAS":  "#877486",
+
+      "8ª CAS":  "#99969E",
+
+      "9ª CAS":  "#DBE69D",
+
+      "10ª CAS": "#8AAA91"
+
+    };
+
+
+    /* ==========================================================
+       4. PANE PRÓPRIO
+
+       mapa-base = abaixo
+       territórios = meio
+       equipamentos = acima
+    ========================================================== */
+
+    if (!map.getPane("territoriosCASPane")) {
+      map.createPane("territoriosCASPane");
+    }
+
+    const pane = map.getPane("territoriosCASPane");
+
+    pane.style.zIndex = 260;
+    pane.style.pointerEvents = "none";
+
+
+    /* ==========================================================
+       5. NORMALIZAÇÃO DE NOMES
+    ========================================================== */
+
+    function normalizar(valor) {
+
+      return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[–—]/g, "-")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toUpperCase();
+
+    }
+
+
+    /* ==========================================================
+       6. DISTRIBUIÇÃO BAIRRO -> CAS
+
+       BASE:
+       planilha
+
+       Os casos definidos posteriormente prevalecem.
+    ========================================================== */
+
+    const BAIRROS_CAS = {
+
+
+      /* ================= 1ª CAS ================= */
+
+      "1ª CAS": [
+
+        "Benfica",
+        "Caju",
+        "Catumbi",
+        "Centro",
+        "Cidade Nova",
+        "Estácio",
+        "Gamboa",
+        "Lapa",
+        "Mangueira",
+        "Paquetá",
+        "Rio Comprido",
+        "Santa Teresa",
+        "Santo Cristo",
+        "São Cristóvão",
+        "Saúde",
+        "Vasco da Gama"
+
+      ],
+
+
+      /* ================= 2ª CAS ================= */
+
+      "2ª CAS": [
+
+        "Alto da Boa Vista",
+        "Andaraí",
+        "Botafogo",
+        "Catete",
+        "Copacabana",
+        "Cosme Velho",
+        "Flamengo",
+        "Gávea",
+        "Glória",
+        "Grajaú",
+        "Horto",
+        "Humaitá",
+        "Ipanema",
+        "Jardim Botânico",
+        "Lagoa",
+        "Laranjeiras",
+        "Leblon",
+        "Leme",
+        "Maracanã",
+        "Praça da Bandeira",
+        "Rocinha",
+        "São Conrado",
+        "Tijuca",
+        "Urca",
+        "Vidigal",
+        "Vila Isabel"
+
+      ],
+
+
+      /* ================= 3ª CAS ================= */
+
+      "3ª CAS": [
+
+        "Abolição",
+        "Água Santa",
+        "Cachambi",
+        "Del Castilho",
+        "Encantado",
+        "Engenho da Rainha",
+        "Engenho de Dentro",
+        "Engenho Novo",
+        "Higienópolis",
+
+        /* decisões do projeto */
+        "Inhaúma",
+        "Tomás Coelho",
+
+        "Jacaré",
+        "Jacarezinho",
+        "Lins de Vasconcelos",
+        "Maria da Graça",
+        "Méier",
+        "Piedade",
+        "Pilares",
+        "Riachuelo",
+        "Rocha",
+        "Sampaio",
+        "São Francisco Xavier",
+        "Todos os Santos"
+
+      ],
+
+
+      /* ================= 4ª CAS ================= */
+
+      "4ª CAS": [
+
+        "Bancários",
+        "Bonsucesso",
+        "Brás de Pina",
+        "Cacuia",
+        "Cidade Universitária",
+        "Cocotá",
+        "Complexo do Alemão",
+        "Cordovil",
+
+        /* Freguesia da Ilha é tratada
+           separadamente mais abaixo */
+
+        "Galeão",
+        "Jardim América",
+        "Jardim Carioca",
+        "Jardim Guanabara",
+        "Manguinhos",
+        "Maré",
+        "Moneró",
+        "Olaria",
+        "Parada de Lucas",
+
+        /* decisões do projeto */
+        "Pavuna",
+        "Vila da Penha",
+
+        "Penha",
+        "Penha Circular",
+        "Pitangueiras",
+        "Portuguesa",
+        "Praia da Bandeira",
+        "Ramos",
+        "Ribeira",
+        "Tauá",
+        "Vigário Geral",
+        "Zumbi"
+
+      ],
+
+
+      /* ================= 5ª CAS ================= */
+
+      "5ª CAS": [
+
+        "Bento Ribeiro",
+        "Campinho",
+        "Cascadura",
+        "Cavalcanti",
+        "Coelho Neto",
+        "Engenheiro Leal",
+        "Guadalupe",
+        "Honório Gurgel",
+        "Madureira",
+        "Marechal Hermes",
+
+        /* decisão do projeto */
+        "Mariópolis",
+
+        "Oswaldo Cruz",
+        "Parque Anchieta",
+        "Quintino Bocaiúva",
+        "Ricardo de Albuquerque",
+        "Rocha Miranda",
+        "Turiaçu",
+        "Vaz Lobo"
+
+      ],
+
+
+      /* ================= 6ª CAS ================= */
+
+      "6ª CAS": [
+
+        "Acari",
+
+        /* decisão do projeto */
+        "Anchieta",
+
+        "Barros Filho",
+        "Colégio",
+        "Costa Barros",
+        "Irajá",
+        "Parque Colúmbia",
+        "Vicente de Carvalho",
+        "Vila Kosmos",
+        "Vista Alegre"
+
+      ],
+
+
+      /* ================= 7ª CAS ================= */
+
+      "7ª CAS": [
+
+        "Anil",
+        "Barra da Tijuca",
+        "Camorim",
+        "Cidade de Deus",
+        "Colônia",
+        "Curicica",
+
+        /* Freguesia de Jacarepaguá é
+           tratada separadamente */
+
+        "Gardênia Azul",
+        "Grumari",
+        "Itanhangá",
+        "Jacarepaguá",
+        "Joá",
+        "Pechincha",
+        "Praça Seca",
+        "Recreio dos Bandeirantes",
+        "Tanque",
+        "Taquara",
+        "Vargem Grande",
+        "Vargem Pequena",
+        "Vila Valqueire"
+
+      ],
+
+
+      /* ================= 8ª CAS ================= */
+
+      "8ª CAS": [
+
+        "Bangu",
+        "Campo dos Afonsos",
+        "Deodoro",
+        "Gericinó",
+        "Jabour",
+        "Jardim Sulacap",
+        "Magalhães Bastos",
+        "Padre Miguel",
+        "Realengo",
+
+        /* decisão do projeto */
+        "Santíssimo",
+
+        "Senador Camará",
+        "Vila Militar"
+
+      ],
+
+
+      /* ================= 9ª CAS ================= */
+
+      "9ª CAS": [
+
+        "Campo Grande",
+        "Cosmos",
+        "Inhoaíba",
+        "Senador Vasconcelos"
+
+      ],
+
+
+      /* ================= 10ª CAS ================= */
+
+      "10ª CAS": [
+
+        "Barra de Guaratiba",
+        "Guaratiba",
+        "Ilha de Guaratiba",
+        "Paciência",
+        "Pedra de Guaratiba",
+        "Santa Cruz",
+        "Sepetiba"
+
+      ]
+
+    };
+
+
+    /* ==========================================================
+       7. CRIA ÍNDICE NORMALIZADO
+    ========================================================== */
+
+    const INDICE = {};
+
+    Object.keys(BAIRROS_CAS).forEach(function (cas) {
+
+      BAIRROS_CAS[cas].forEach(function (bairro) {
+
+        INDICE[normalizar(bairro)] = cas;
+
+      });
+
+    });
+
+
+    /* ==========================================================
+       8. REGRAS PRIORITÁRIAS
+
+       Essas regras prevalecem sobre qualquer outra associação.
+    ========================================================== */
+
+    const AJUSTES_PRIORITARIOS = {
+
+      "INHAUMA":       "3ª CAS",
+      "TOMAS COELHO":  "3ª CAS",
+
+      "PAVUNA":        "4ª CAS",
+      "VILA DA PENHA": "4ª CAS",
+
+      "MARIOPOLIS":    "5ª CAS",
+
+      "ANCHIETA":      "6ª CAS",
+
+      "SANTISSIMO":    "8ª CAS"
+
+    };
+
+
+    /* ==========================================================
+       9. IDENTIFICA CAS DO BAIRRO
+
+       O campo regiao_adm resolve a existência de duas
+       Freguesias:
+       - Ilha do Governador -> 4ª
+       - Jacarepaguá -> 7ª
+    ========================================================== */
+
+    function identificarCAS(feature) {
+
+      const p = feature.properties || {};
+
+      const bairro = normalizar(p.nome);
+
+      const ra = normalizar(p.regiao_adm);
+
+
+      /* ajustes definidos pelo projeto */
+
+      if (AJUSTES_PRIORITARIOS[bairro]) {
+
+        return AJUSTES_PRIORITARIOS[bairro];
+
+      }
+
+
+      /* FREGUESIA */
+
+      if (bairro === "FREGUESIA") {
+
+        if (
+          ra.includes("ILHA") ||
+          ra.includes("GOVERNADOR")
+        ) {
+
+          return "4ª CAS";
+
+        }
+
+        return "7ª CAS";
+
+      }
+
+
+      /* grafias eventualmente diferentes */
+
+      if (bairro === "PARQUE COLUMBIA") {
+        return "6ª CAS";
+      }
+
+
+      if (bairro === "VICENTE DE CARVALHO") {
+        return "6ª CAS";
+      }
+
+
+      if (
+        bairro === "CAMPO DOS AFONSO" ||
+        bairro === "CAMPO DOS AFONSOS"
+      ) {
+        return "8ª CAS";
+      }
+
+
+      if (
+        bairro === "SENADOR CAMARA" ||
+        bairro === "SENADOR CAMARA"
+      ) {
+        return "8ª CAS";
+      }
+
+
+      return INDICE[bairro] || null;
+
+    }
+
+
+    /* ==========================================================
+       10. CARREGA TURF
+
+       Turf será usado apenas para unir os bairros pertencentes
+       à mesma CAS, eliminando as linhas internas entre bairros.
+    ========================================================== */
+
+    function carregarTurf() {
+
+      return new Promise(function (resolve, reject) {
+
+        if (window.turf) {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement("script");
+
+        script.src =
+          "https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js";
+
+        script.onload = resolve;
+
+        script.onerror = function () {
+          reject(
+            new Error("Não foi possível carregar Turf.js.")
+          );
+        };
+
+        document.head.appendChild(script);
+
+      });
+
+    }
+
+
+    /* ==========================================================
+       11. ENDEREÇO DA MALHA OFICIAL DOS BAIRROS
+
+       Prefeitura do Rio / Instituto Pereira Passos
+
+       outSR=4326:
+       entrega longitude/latitude compatível com Leaflet.
+    ========================================================== */
+
+    const URL_BAIRROS =
+      "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/" +
+      "Cartografia/Limites_administrativos/FeatureServer/4/query" +
+      "?where=1%3D1" +
+      "&outFields=nome%2Cregiao_adm%2Ccodbairro%2Ccodra" +
+      "&returnGeometry=true" +
+      "&outSR=4326" +
+      "&f=geojson";
+
+
+    /* ==========================================================
+       12. INDICADOR DE CARREGAMENTO
+    ========================================================== */
+
+    const aviso = document.createElement("div");
+
+    aviso.id = "statusTerritoriosCAS";
+
+    aviso.style.cssText = [
+      "position:absolute",
+      "right:16px",
+      "bottom:58px",
+      "z-index:1800",
+      "background:rgba(255,255,255,.96)",
+      "border:1px solid #e5e7eb",
+      "border-radius:999px",
+      "padding:7px 11px",
+      "box-shadow:0 5px 16px rgba(15,23,42,.10)",
+      "font-size:11px",
+      "color:#475569",
+      "font-family:Inter,system-ui,sans-serif"
+    ].join(";");
+
+    aviso.textContent =
+      "Carregando territórios das CAS…";
+
+    document.body.appendChild(aviso);
+
+
+    /* ==========================================================
+       13. FUNÇÃO PARA UNIR POLÍGONOS DE UMA CAS
+    ========================================================== */
+
+    function unirFeatures(features, cas) {
+
+      if (!features.length) {
+        return null;
+      }
+
+
+      /* somente um bairro */
+
+      if (features.length === 1) {
+
+        const unico =
+          JSON.parse(JSON.stringify(features[0]));
+
+        unico.properties = {
+          cas: cas
+        };
+
+        return unico;
+
+      }
+
+
+      /* Turf 7 */
+
+      try {
+
+        const fc =
+          turf.featureCollection(features);
+
+        const unido =
+          turf.union(fc);
+
+        if (unido) {
+
+          unido.properties = {
+            cas: cas
+          };
+
+          return unido;
+
+        }
+
+      } catch (erro) {
+
+        console.warn(
+          "União direta falhou em " + cas,
+          erro
+        );
+
+      }
+
+
+      /* fallback:
+         tenta união progressiva */
+
+      try {
+
+        let acumulado = features[0];
+
+        for (
+          let i = 1;
+          i < features.length;
+          i++
+        ) {
+
+          try {
+
+            const tentativa =
+              turf.union(
+                turf.featureCollection([
+                  acumulado,
+                  features[i]
+                ])
+              );
+
+            if (tentativa) {
+              acumulado = tentativa;
+            }
+
+          } catch (e) {
+
+            /*
+              Se uma ilha ou geometria separada causar
+              problema, seguimos e depois usamos os bairros
+              originais como fallback.
+            */
+
+          }
+
+        }
+
+        acumulado.properties = {
+          cas: cas
+        };
+
+        return acumulado;
+
+      } catch (erro) {
+
+        return null;
+
+      }
+
+    }
+
+
+    /* ==========================================================
+       14. EXECUÇÃO
+    ========================================================== */
+
+    Promise
+      .all([
+
+        carregarTurf(),
+
+        fetch(URL_BAIRROS)
+          .then(function (resposta) {
+
+            if (!resposta.ok) {
+
+              throw new Error(
+                "Erro HTTP " + resposta.status
+              );
+
+            }
+
+            return resposta.json();
+
+          })
+
+      ])
+
+      .then(function (resultado) {
+
+        const geojson = resultado[1];
+
+
+        if (
+          !geojson ||
+          !Array.isArray(geojson.features)
+        ) {
+
+          throw new Error(
+            "A Prefeitura não retornou um GeoJSON válido."
+          );
+
+        }
+
+
+        /* ======================================================
+           15. AGRUPA BAIRROS POR CAS
+        ====================================================== */
+
+        const grupos = {
+
+          "1ª CAS": [],
+          "2ª CAS": [],
+          "3ª CAS": [],
+          "4ª CAS": [],
+          "5ª CAS": [],
+          "6ª CAS": [],
+          "7ª CAS": [],
+          "8ª CAS": [],
+          "9ª CAS": [],
+          "10ª CAS": []
+
+        };
+
+
+        const naoClassificados = [];
+
+
+        geojson.features.forEach(function (feature) {
+
+          const cas = identificarCAS(feature);
+
+          if (cas) {
+
+            feature.properties.cas_smas = cas;
+
+            grupos[cas].push(feature);
+
+          } else {
+
+            naoClassificados.push({
+              bairro:
+                feature.properties &&
+                feature.properties.nome,
+
+              regiao:
+                feature.properties &&
+                feature.properties.regiao_adm
+            });
+
+          }
+
+        });
+
+
+        /* ======================================================
+           16. DISSOLVE / UNIÃO
+
+           Produz um polígono ou multipolígono para cada CAS.
+        ====================================================== */
+
+        const territorios = [];
+
+
+        Object.keys(grupos).forEach(function (cas) {
+
+          const unido =
+            unirFeatures(
+              grupos[cas],
+              cas
+            );
+
+          if (unido) {
+
+            territorios.push(unido);
+
+          }
+
+        });
+
+
+        const resultadoCAS = {
+
+          type: "FeatureCollection",
+
+          features: territorios
+
+        };
+
+
+        /*
+          Mantemos uma cópia global.
+
+          Isso permite, inclusive, exportar depois
+          o resultado para territorios-cas.geojson.
+        */
+
+        window.GEOJSON_TERRITORIOS_CAS =
+          resultadoCAS;
+
+
+        /* ======================================================
+           17. CRIA A CAMADA LEAFLET
+        ====================================================== */
+
+        const camada =
+          L.geoJSON(
+            resultadoCAS,
+            {
+
+              pane: "territoriosCASPane",
+
+              interactive: false,
+
+              style: function (feature) {
+
+                const cas =
+                  feature.properties.cas;
+
+                return {
+
+                  color: "#475569",
+
+                  weight: 1.15,
+
+                  opacity: .62,
+
+                  fillColor:
+                    CORES_CAS[cas],
+
+                  /*
+                    Opacidade baixa para o CartoDB continuar
+                    completamente legível.
+                  */
+
+                  fillOpacity: .20
+
+                };
+
+              }
+
+            }
+          );
+
+
+        const grupo =
+          L.layerGroup([
+            camada
+          ]);
+
+
+        grupo.addTo(map);
+
+
+        window.territoriosCASGroup =
+          grupo;
+
+        window.territoriosCASLayer =
+          camada;
+
+
+        /* ======================================================
+           18. NÃO ALTERA O ZOOM
+
+           Nenhum fitBounds / setView é executado.
+        ====================================================== */
+
+
+        /* ======================================================
+           19. CAS ATUALMENTE SELECIONADA
+        ====================================================== */
+
+        function obterCASAtiva() {
+
+          const btn =
+            document.querySelector(
+              ".cas-btn.active"
+            );
+
+          return btn
+            ? btn.textContent.trim()
+            : "TODAS";
+
+        }
+
+
+        /* ======================================================
+           20. DESTAQUE AO FILTRAR POR CAS
+        ====================================================== */
+
+        function atualizarTerritorios() {
+
+          const ativa =
+            obterCASAtiva();
+
+
+          camada.eachLayer(
+            function (layer) {
+
+              const cas =
+                layer.feature.properties.cas;
+
+
+              /* TODAS */
+
+              if (ativa === "TODAS") {
+
+                layer.setStyle({
+
+                  color: "#475569",
+
+                  weight: 1.15,
+
+                  opacity: .62,
+
+                  fillColor:
+                    CORES_CAS[cas],
+
+                  fillOpacity: .20
+
+                });
+
+              }
+
+
+              /* CAS selecionada */
+
+              else if (cas === ativa) {
+
+                layer.setStyle({
+
+                  color: "#334155",
+
+                  weight: 2.2,
+
+                  opacity: .9,
+
+                  fillColor:
+                    CORES_CAS[cas],
+
+                  fillOpacity: .34
+
+                });
+
+              }
+
+
+              /* demais CAS */
+
+              else {
+
+                layer.setStyle({
+
+                  color: "#94a3b8",
+
+                  weight: .5,
+
+                  opacity: .15,
+
+                  fillColor:
+                    CORES_CAS[cas],
+
+                  fillOpacity: .035
+
+                });
+
+              }
+
+            }
+          );
+
+        }
+
+
+        window.atualizarTerritoriosCAS =
+          atualizarTerritorios;
+
+
+        /* ======================================================
+           21. INTEGRA COM OS BOTÕES "FILTRAR POR CAS"
+
+           Não substitui seu onclick atual.
+           Apenas acrescenta o destaque territorial.
+        ====================================================== */
+
+        document
+          .querySelectorAll(".cas-btn")
+          .forEach(function (btn) {
+
+            btn.addEventListener(
+              "click",
+              function () {
+
+                setTimeout(
+                  atualizarTerritorios,
+                  20
+                );
+
+              }
+            );
+
+          });
+
+
+        /* ======================================================
+           22. CHECKBOX "TERRITÓRIOS DAS CAS"
+
+           Não recebe data-type para não interferir com
+           o applyFilters() dos equipamentos.
+        ====================================================== */
+
+        const secaoCamadas =
+          document.querySelector(
+            ".sidebar .section"
+          );
+
+
+        if (
+          secaoCamadas &&
+          !document.getElementById(
+            "toggleTerritoriosCASReal"
+          )
+        ) {
+
+          const linha =
+            document.createElement("div");
+
+          linha.className = "check";
+
+          linha.innerHTML =
+
+            '<label>' +
+
+              '<input ' +
+                'type="checkbox" ' +
+                'id="toggleTerritoriosCASReal" ' +
+                'checked' +
+              '>' +
+
+              '<span>' +
+
+                '<i class="dot" ' +
+                'style="' +
+                  'background:linear-gradient(' +
+                    '135deg,' +
+                    '#EEE99A,' +
+                    '#877486,' +
+                    '#8AAA91' +
+                  ');' +
+                  'border:1px solid #94a3b8;' +
+                '">' +
+                '</i> ' +
+
+                'Territórios das CAS' +
+
+              '</span>' +
+
+            '</label>';
+
+
+          secaoCamadas.appendChild(
+            linha
+          );
+
+
+          document
+            .getElementById(
+              "toggleTerritoriosCASReal"
+            )
+            .addEventListener(
+              "change",
+              function () {
+
+                if (this.checked) {
+
+                  if (!map.hasLayer(grupo)) {
+
+                    grupo.addTo(map);
+
+                  }
+
+                  atualizarTerritorios();
+
+                }
+
+                else {
+
+                  if (map.hasLayer(grupo)) {
+
+                    map.removeLayer(grupo);
+
+                  }
+
+                }
+
+              }
+            );
+
+        }
+
+
+        /* ======================================================
+           23. PRIMEIRA ATUALIZAÇÃO
+        ====================================================== */
+
+        atualizarTerritorios();
+
+
+        /* ======================================================
+           24. DIAGNÓSTICO
+
+           Caso algum bairro oficial da Prefeitura não tenha
+           correspondência na planilha, ele será listado aqui.
+        ====================================================== */
+
+        console.group(
+          "Territórios CAS — diagnóstico"
+        );
+
+
+        Object.keys(grupos).forEach(function (cas) {
+
+          console.log(
+            cas + ":",
+            grupos[cas].map(
+              function (f) {
+                return f.properties.nome;
+              }
+            )
+          );
+
+        });
+
+
+        if (naoClassificados.length) {
+
+          console.warn(
+            "Bairros oficiais ainda não classificados:",
+            naoClassificados
+          );
+
+        } else {
+
+          console.log(
+            "Todos os bairros foram classificados."
+          );
+
+        }
+
+
+        console.log(
+          "GeoJSON final disponível em:",
+          "window.GEOJSON_TERRITORIOS_CAS"
+        );
+
+
+        console.groupEnd();
+
+
+        /* ======================================================
+           25. STATUS
+        ====================================================== */
+
+        aviso.textContent =
+          territorios.length +
+          " territórios CAS carregados";
+
+
+        setTimeout(function () {
+          aviso.remove();
+        }, 2200);
+
+      })
+
+
+      .catch(function (erro) {
+
+        console.error(
+          "Erro ao carregar territórios das CAS:",
+          erro
+        );
+
+
+        aviso.textContent =
+          "Erro ao carregar territórios das CAS";
+
+
+        aviso.style.color =
+          "#b91c1c";
+
+
+        setTimeout(function () {
+          aviso.remove();
+        }, 6000);
+
+      });
+
+  }
+
+
+  /* ============================================================
+     26. EXECUTA
+  ============================================================ */
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      iniciarTerritoriosCAS
+    );
+
+  } else {
+
+    iniciarTerritoriosCAS();
+
+  }
+
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ============================================================
+     CORREÇÃO DEFINITIVA DOS 5 TERRITÓRIOS
+   
+     
+     O script:
+     1. aguarda o território principal;
+     2. localiza cada bairro por coordenada;
+     3. obtém o polígono oficial;
+     4. une o polígono à CAS correta;
+     5. remove a camada territorial antiga;
+     6. redesenha as 10 CAS já corrigidas.
+
+     São Cristóvão           -> 1ª CAS
+     Oswaldo Cruz            -> 5ª CAS
+     Freguesia/Jacarepaguá   -> 7ª CAS
+     Barra Olímpica          -> 7ª CAS
+     Vila Kennedy            -> 8ª CAS
+=============================================================== -->
+
+<script>
+(function(){
+
+  if(window.__CAS_CORRECAO_GEOMETRICA_V1__){
+    return;
+  }
+
+  window.__CAS_CORRECAO_GEOMETRICA_V1__ = true;
+
+
+  /* ============================================================
+     1. AGUARDA A CAMADA PRINCIPAL ESTAR PRONTA
+  ============================================================ */
+
+  function aguardarCamada(){
+
+    if(
+      typeof L === "undefined" ||
+      typeof map === "undefined" ||
+      typeof turf === "undefined" ||
+      !window.GEOJSON_TERRITORIOS_CAS ||
+      !window.territoriosCASGroup
+    ){
+
+      setTimeout(
+        aguardarCamada,
+        300
+      );
+
+      return;
+
+    }
+
+
+    executarCorrecao();
+
+  }
+
+
+  /* ============================================================
+     2. CORES — AS MESMAS DO SCRIPT PRINCIPAL
+  ============================================================ */
+
+  const CORES_CAS = {
+
+    "1ª CAS":  "#EEE99A",
+
+    "2ª CAS":  "#DCE7E6",
+
+    "3ª CAS":  "#DDE5A8",
+
+    "4ª CAS":  "#D6A29D",
+
+    "5ª CAS":  "#D3B547",
+
+    "6ª CAS":  "#C6B5C5",
+
+    "7ª CAS":  "#877486",
+
+    "8ª CAS":  "#99969E",
+
+    "9ª CAS":  "#DBE69D",
+
+    "10ª CAS": "#8AAA91"
+
+  };
+
+
+  /* ============================================================
+     3. PONTOS INTERNOS DOS 5 BAIRROS
+
+     formato:
+     longitude, latitude
+
+     O nome aqui serve SOMENTE para diagnóstico.
+     A localização do polígono é espacial.
+  ============================================================ */
+
+  const CORRECOES = [
+
+    {
+      nome: "São Cristóvão",
+
+      cas: "1ª CAS",
+
+      lon: -43.22539,
+
+      lat: -22.90033
+    },
+
+
+    {
+      nome: "Oswaldo Cruz",
+
+      cas: "5ª CAS",
+
+      lon: -43.35000,
+
+      lat: -22.87056
+    },
+
+
+    {
+      nome: "Freguesia (Jacarepaguá)",
+
+      cas: "7ª CAS",
+
+      lon: -43.33308,
+
+      lat: -22.92234
+    },
+
+
+    {
+      nome: "Barra Olímpica",
+
+      cas: "7ª CAS",
+
+      lon: -43.38672,
+
+      lat: -22.97135
+    },
+
+
+    {
+      nome: "Vila Kennedy",
+
+      cas: "8ª CAS",
+
+      lon: -43.48833,
+
+      lat: -22.86056
+    }
+
+  ];
+
+
+  /* ============================================================
+     4. SERVIÇO OFICIAL DOS BAIRROS
+  ============================================================ */
+
+  const BASE_URL =
+
+    "https://pgeo3.rio.rj.gov.br/" +
+
+    "arcgis/rest/services/" +
+
+    "Cartografia/Limites_administrativos/" +
+
+    "FeatureServer/4/query";
+
+
+  /* ============================================================
+     5. CONSULTA ESPACIAL
+
+     Em vez de procurar:
+
+     nome = "São Cristóvão"
+
+     perguntamos:
+
+     "qual polígono contém este ponto?"
+
+     Isto elimina definitivamente os problemas de nomenclatura.
+  ============================================================ */
+
+  function buscarPoligono(item){
+
+    const params =
+      new URLSearchParams();
+
+
+    params.set(
+      "geometry",
+      item.lon + "," + item.lat
+    );
+
+
+    params.set(
+      "geometryType",
+      "esriGeometryPoint"
+    );
+
+
+    params.set(
+      "inSR",
+      "4326"
+    );
+
+
+    params.set(
+      "spatialRel",
+      "esriSpatialRelIntersects"
+    );
+
+
+    params.set(
+      "outFields",
+      "*"
+    );
+
+
+    params.set(
+      "returnGeometry",
+      "true"
+    );
+
+
+    params.set(
+      "outSR",
+      "4326"
+    );
+
+
+    params.set(
+      "f",
+      "geojson"
+    );
+
+
+    const url =
+      BASE_URL +
+      "?" +
+      params.toString();
+
+
+    return fetch(url)
+
+      .then(function(response){
+
+        if(!response.ok){
+
+          throw new Error(
+            "HTTP " +
+            response.status +
+            " — " +
+            item.nome
+          );
+
+        }
+
+
+        return response.json();
+
+      })
+
+
+      .then(function(data){
+
+        if(
+          !data ||
+          !Array.isArray(data.features) ||
+          data.features.length === 0
+        ){
+
+          throw new Error(
+            "Nenhum polígono encontrado para " +
+            item.nome
+          );
+
+        }
+
+
+        /*
+          Como o ponto está dentro do bairro,
+          pegamos a primeira geometria retornada.
+        */
+
+        const feature =
+          JSON.parse(
+            JSON.stringify(
+              data.features[0]
+            )
+          );
+
+
+        feature.properties =
+          Object.assign(
+            {},
+            feature.properties,
+            {
+
+              cas_destino:
+                item.cas,
+
+              correcao_nome:
+                item.nome
+
+            }
+          );
+
+
+        return {
+
+          item: item,
+
+          feature: feature
+
+        };
+
+      });
+
+  }
+
+
+  /* ============================================================
+     6. FUNÇÃO DE UNIÃO
+
+     Agora uniremos:
+
+     CAS já pronta
+          +
+     UM bairro
+
+      ============================================================ */
+
+  function unirNaCAS(
+    casFeature,
+    bairroFeature,
+    cas
+  ){
+
+    try{
+
+      const resultado =
+        turf.union(
+
+          turf.featureCollection([
+
+            casFeature,
+
+            bairroFeature
+
+          ])
+
+        );
+
+
+      if(!resultado){
+
+        throw new Error(
+          "Turf retornou geometria vazia."
+        );
+
+      }
+
+
+      resultado.properties = {
+
+        cas: cas
+
+      };
+
+
+      return resultado;
+
+    }
+
+
+    catch(erro){
+
+      console.error(
+        "Falha ao integrar geometria em " +
+        cas,
+        erro
+      );
+
+
+      /*
+        Se houver falha real, NÃO desenhamos
+        um patch estranho por cima.
+
+        Mantemos a geometria anterior.
+      */
+
+      return casFeature;
+
+    }
+
+  }
+
+
+  /* ============================================================
+     7. EXECUÇÃO
+  ============================================================ */
+
+  function executarCorrecao(){
+
+
+    Promise.all(
+
+      CORRECOES.map(
+        buscarPoligono
+      )
+
+    )
+
+
+    .then(function(resultados){
+
+
+      /* ========================================================
+         8. CLONA A COLEÇÃO QUE JÁ ESTÁ FUNCIONANDO
+      ======================================================== */
+
+      const corrigido =
+        JSON.parse(
+          JSON.stringify(
+            window.GEOJSON_TERRITORIOS_CAS
+          )
+        );
+
+
+      /* ========================================================
+         9. LOCALIZA A FEATURE DE CADA CAS
+      ======================================================== */
+
+      function indiceDaCAS(cas){
+
+        return corrigido.features.findIndex(
+          function(feature){
+
+            return (
+              feature.properties &&
+              feature.properties.cas === cas
+            );
+
+          }
+        );
+
+      }
+
+
+      /* ========================================================
+         10. INTEGRA CADA BAIRRO À SUA CAS
+      ======================================================== */
+
+      resultados.forEach(
+        function(resultado){
+
+          const item =
+            resultado.item;
+
+
+          const bairro =
+            resultado.feature;
+
+
+          const indice =
+            indiceDaCAS(
+              item.cas
+            );
+
+
+          if(indice === -1){
+
+            console.error(
+              "CAS não encontrada:",
+              item.cas
+            );
+
+            return;
+
+          }
+
+
+          const casAtual =
+            corrigido.features[
+              indice
+            ];
+
+
+          const casNova =
+            unirNaCAS(
+
+              casAtual,
+
+              bairro,
+
+              item.cas
+
+            );
+
+
+          corrigido.features[
+            indice
+          ] = casNova;
+
+
+          console.log(
+
+            "Integrado:",
+
+            item.nome,
+
+            "→",
+
+            item.cas,
+
+            "| bairro encontrado na base:",
+
+            bairro.properties &&
+            bairro.properties.nome
+
+          );
+
+        }
+      );
+
+
+      /* ========================================================
+         11. REMOVE A CAMADA TERRITORIAL ANTIGA
+      ======================================================== */
+
+      try{
+
+        if(
+          window.territoriosCASGroup &&
+          map.hasLayer(
+            window.territoriosCASGroup
+          )
+        ){
+
+          map.removeLayer(
+            window.territoriosCASGroup
+          );
+
+        }
+
+      }
+      catch(e){}
+
+
+      /* ========================================================
+         12. CRIA A NOVA CAMADA
+
+         Agora os bairros fazem PARTE da geometria da CAS.
+
+      ======================================================== */
+
+      const camadaCorrigida =
+        L.geoJSON(
+          corrigido,
+          {
+
+            pane:
+              "territoriosCASPane",
+
+            interactive:
+              false,
+
+
+            style:
+              function(feature){
+
+                const cas =
+                  feature.properties.cas;
+
+
+                return {
+
+                  color:
+                    "#475569",
+
+                  weight:
+                    1.15,
+
+                  opacity:
+                    .62,
+
+                  fillColor:
+                    CORES_CAS[cas],
+
+                  fillOpacity:
+                    .20
+
+                };
+
+              }
+
+          }
+        );
+
+
+      const grupoCorrigido =
+        L.layerGroup([
+
+          camadaCorrigida
+
+        ]);
+
+
+      grupoCorrigido.addTo(
+        map
+      );
+
+
+      /* ========================================================
+         13. SUBSTITUI AS REFERÊNCIAS GLOBAIS
+
+         A partir daqui, esta passa a ser a camada oficial
+         utilizada pelo mapa.
+      ======================================================== */
+
+      window.GEOJSON_TERRITORIOS_CAS =
+        corrigido;
+
+
+      window.territoriosCASLayer =
+        camadaCorrigida;
+
+
+      window.territoriosCASGroup =
+        grupoCorrigido;
+
+
+      /* ========================================================
+         14. FILTRO POR CAS
+      ======================================================== */
+
+      function obterCASAtiva(){
+
+        const ativo =
+          document.querySelector(
+            ".cas-btn.active"
+          );
+
+
+        return ativo
+          ? ativo.textContent.trim()
+          : "TODAS";
+
+      }
+
+
+      function atualizarCorrigido(){
+
+        const ativa =
+          obterCASAtiva();
+
+
+        camadaCorrigida.eachLayer(
+          function(layer){
+
+            const cas =
+              layer
+                .feature
+                .properties
+                .cas;
+
+
+            /* TODAS */
+
+            if(
+              ativa === "TODAS"
+            ){
+
+              layer.setStyle({
+
+                color:
+                  "#475569",
+
+                weight:
+                  1.15,
+
+                opacity:
+                  .62,
+
+                fillColor:
+                  CORES_CAS[cas],
+
+                fillOpacity:
+                  .20
+
+              });
+
+            }
+
+
+            /* CAS SELECIONADA */
+
+            else if(
+              ativa === cas
+            ){
+
+              layer.setStyle({
+
+                color:
+                  "#334155",
+
+                weight:
+                  2.2,
+
+                opacity:
+                  .9,
+
+                fillColor:
+                  CORES_CAS[cas],
+
+                fillOpacity:
+                  .34
+
+              });
+
+            }
+
+
+            /* DEMAIS */
+
+            else{
+
+              layer.setStyle({
+
+                color:
+                  "#94a3b8",
+
+                weight:
+                  .5,
+
+                opacity:
+                  .15,
+
+                fillColor:
+                  CORES_CAS[cas],
+
+                fillOpacity:
+                  .035
+
+              });
+
+            }
+
+          }
+        );
+
+      }
+
+
+      window.atualizarTerritoriosCAS =
+        atualizarCorrigido;
+
+
+      /* ========================================================
+         15. BOTÕES CAS
+
+         Acrescentamos apenas a atualização da nova camada.
+      ======================================================== */
+
+      document
+        .querySelectorAll(
+          ".cas-btn"
+        )
+        .forEach(
+          function(btn){
+
+            btn.addEventListener(
+              "click",
+              function(){
+
+                setTimeout(
+                  atualizarCorrigido,
+                  25
+                );
+
+              }
+            );
+
+          }
+        );
+
+
+      /* ========================================================
+         16. CORRIGE O CHECKBOX
+
+         Clonamos o checkbox para remover os listeners antigos
+         e ligamos somente a camada corrigida.
+      ======================================================== */
+
+      const checkboxAntigo =
+        document.getElementById(
+          "toggleTerritoriosCASReal"
+        );
+
+
+      if(checkboxAntigo){
+
+        const checkboxNovo =
+          checkboxAntigo.cloneNode(
+            true
+          );
+
+
+        checkboxAntigo
+          .parentNode
+          .replaceChild(
+
+            checkboxNovo,
+
+            checkboxAntigo
+
+          );
+
+
+        checkboxNovo.addEventListener(
+          "change",
+          function(){
+
+
+            if(this.checked){
+
+              if(
+                !map.hasLayer(
+                  grupoCorrigido
+                )
+              ){
+
+                grupoCorrigido.addTo(
+                  map
+                );
+
+              }
+
+
+              atualizarCorrigido();
+
+            }
+
+
+            else{
+
+              if(
+                map.hasLayer(
+                  grupoCorrigido
+                )
+              ){
+
+                map.removeLayer(
+                  grupoCorrigido
+                );
+
+              }
+
+            }
+
+          }
+        );
+
+      }
+
+
+      /* ========================================================
+         17. ESTADO INICIAL
+      ======================================================== */
+
+      atualizarCorrigido();
+
+
+      /* ========================================================
+         18. DIAGNÓSTICO
+      ======================================================== */
+
+      console.group(
+        "CORREÇÃO GEOMÉTRICA DAS CAS"
+      );
+
+
+      resultados.forEach(
+        function(resultado){
+
+          console.log(
+
+            resultado.item.nome,
+
+            "→",
+
+            resultado.item.cas,
+
+            "| polígono identificado:",
+
+            resultado.feature
+              .properties &&
+            resultado.feature
+              .properties.nome
+
+          );
+
+        }
+      );
+
+
+      console.log(
+
+        "Total de territórios finais:",
+
+        corrigido.features.length
+
+      );
+
+
+      console.log(
+
+        "GeoJSON corrigido:",
+
+        corrigido
+
+      );
+
+
+      console.groupEnd();
+
+    })
+
+
+    .catch(function(erro){
+
+      console.error(
+
+        "ERRO NA CORREÇÃO GEOMÉTRICA DAS CAS:",
+
+        erro
+
+      );
+
+    });
+
+  }
+
+
+  /* ============================================================
+     19. INÍCIO
+  ============================================================ */
+
+  if(
+    document.readyState ===
+    "loading"
+  ){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      aguardarCamada
+    );
+
+  }
+
+  else{
+
+    aguardarCamada();
+
+  }
+
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+/* ============================================================
+   CORREÇÃO GEOMÉTRICA — 6ª CAS
+
+   Pavuna
+   Costa Barros
+   Barros Filho
+   Anchieta
+
+   Este script:
+   1. encontra os polígonos oficiais desses 4 bairros;
+   2. remove cada polígono de qualquer outra CAS;
+   3. incorpora todos à 6ª CAS;
+   4. substitui a camada territorial existente.
+
+  =============================================================== */
+
+(function(){
+
+  if (window.__CORRECAO_REAL_6CAS_V1__) return;
+  window.__CORRECAO_REAL_6CAS_V1__ = true;
+
+
+  function aguardar(){
+
+    if (
+      typeof L === "undefined" ||
+      typeof map === "undefined" ||
+      typeof turf === "undefined" ||
+      !window.GEOJSON_TERRITORIOS_CAS
+    ){
+      setTimeout(aguardar, 300);
+      return;
+    }
+
+    corrigir();
+  }
+
+
+  const CORES_CAS = {
+    "1ª CAS":"#EEE99A",
+    "2ª CAS":"#DCE7E6",
+    "3ª CAS":"#DDE5A8",
+    "4ª CAS":"#D6A29D",
+    "5ª CAS":"#D3B547",
+    "6ª CAS":"#C6B5C5",
+    "7ª CAS":"#877486",
+    "8ª CAS":"#99969E",
+    "9ª CAS":"#DBE69D",
+    "10ª CAS":"#8AAA91"
+  };
+
+
+  function normalizar(v){
+    return String(v || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g,"")
+      .replace(/\s+/g," ")
+      .trim()
+      .toUpperCase();
+  }
+
+
+  const ALVOS = new Set([
+    "PAVUNA",
+    "COSTA BARROS",
+    "BARROS FILHO",
+    "ANCHIETA"
+  ]);
+
+
+  const URL =
+    "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/" +
+    "Cartografia/Limites_administrativos/FeatureServer/4/query" +
+    "?where=1%3D1" +
+    "&outFields=*" +
+    "&returnGeometry=true" +
+    "&outSR=4326" +
+    "&f=geojson";
+
+
+  function corrigir(){
+
+    fetch(URL)
+
+      .then(function(r){
+
+        if (!r.ok){
+          throw new Error("HTTP " + r.status);
+        }
+
+        return r.json();
+
+      })
+
+      .then(function(malha){
+
+        /* =====================================================
+           1. LOCALIZA OS 4 BAIRROS OFICIAIS
+        ===================================================== */
+
+        const bairros = malha.features.filter(function(f){
+
+          const nome = normalizar(
+            f.properties && f.properties.nome
+          );
+
+          return ALVOS.has(nome);
+
+        });
+
+
+        console.log(
+          "Bairros encontrados para a 6ª CAS:",
+          bairros.map(f => f.properties.nome)
+        );
+
+
+        if (bairros.length !== 4){
+
+          console.warn(
+            "Esperávamos 4 bairros, mas foram encontrados:",
+            bairros.length
+          );
+
+        }
+
+
+        /* =====================================================
+           2. CLONA O GEOJSON FINAL ATUAL
+        ===================================================== */
+
+        const corrigido = JSON.parse(
+          JSON.stringify(
+            window.GEOJSON_TERRITORIOS_CAS
+          )
+        );
+
+
+        /* =====================================================
+           3. LOCALIZA A 6ª CAS
+        ===================================================== */
+
+        let indice6 = corrigido.features.findIndex(function(f){
+
+          return (
+            f.properties &&
+            f.properties.cas === "6ª CAS"
+          );
+
+        });
+
+
+        if (indice6 === -1){
+
+          throw new Error(
+            "6ª CAS não encontrada no GeoJSON atual."
+          );
+
+        }
+
+
+        /* =====================================================
+           4. PARA CADA BAIRRO:
+
+           - SUBTRAI DE TODAS AS OUTRAS CAS
+           - UNE À 6ª CAS
+        ===================================================== */
+
+        bairros.forEach(function(bairro){
+
+          /* -----------------------------------------------
+             REMOVE O BAIRRO DAS OUTRAS 9 CAS
+          ----------------------------------------------- */
+
+          corrigido.features.forEach(function(feature, i){
+
+            if (i === indice6) return;
+
+            try{
+
+              const resultado =
+                turf.difference(
+                  turf.featureCollection([
+                    feature,
+                    bairro
+                  ])
+                );
+
+
+              if (resultado){
+
+                resultado.properties = {
+                  cas: feature.properties.cas
+                };
+
+                corrigido.features[i] = resultado;
+
+              }
+
+            }
+
+            catch(e){
+
+              console.warn(
+                "Não foi necessário/possível subtrair",
+                bairro.properties.nome,
+                "de",
+                feature.properties.cas
+              );
+
+            }
+
+          });
+
+
+          /* -----------------------------------------------
+             ADICIONA À 6ª CAS
+          ----------------------------------------------- */
+
+          try{
+
+            const atual6 =
+              corrigido.features[indice6];
+
+
+            const unido =
+              turf.union(
+                turf.featureCollection([
+                  atual6,
+                  bairro
+                ])
+              );
+
+
+            if (unido){
+
+              unido.properties = {
+                cas: "6ª CAS"
+              };
+
+              corrigido.features[indice6] =
+                unido;
+
+            }
+
+          }
+
+          catch(e){
+
+            console.error(
+              "Erro ao integrar",
+              bairro.properties.nome,
+              "à 6ª CAS:",
+              e
+            );
+
+          }
+
+        });
+
+
+        /* =====================================================
+           5. REMOVE CAMADAS/PATCHES TERRITORIAIS ANTIGOS
+        ===================================================== */
+
+        [
+          "territoriosCASGroup",
+          "patch6CAS",
+          "patchBuracosCAS",
+          "patchFillCAS",
+          "camadaPatchCASBuracos",
+          "camadaCorrecaoCAS",
+          "correcoesTerritoriaisCAS"
+        ].forEach(function(nome){
+
+          try{
+
+            const l = window[nome];
+
+            if (
+              l &&
+              map.hasLayer(l)
+            ){
+              map.removeLayer(l);
+            }
+
+          }
+          catch(e){}
+
+        });
+
+
+        /* =====================================================
+           6. CRIA NOVA CAMADA TERRITORIAL
+        ===================================================== */
+
+        const novaCamada =
+          L.geoJSON(
+            corrigido,
+            {
+
+              pane:"territoriosCASPane",
+
+              interactive:false,
+
+              style:function(feature){
+
+                const cas =
+                  feature.properties.cas;
+
+                return {
+                  color:"#475569",
+                  weight:1.15,
+                  opacity:.62,
+                  fillColor:CORES_CAS[cas],
+                  fillOpacity:.20
+                };
+
+              }
+
+            }
+          );
+
+
+        const novoGrupo =
+          L.layerGroup([
+            novaCamada
+          ]);
+
+
+        novoGrupo.addTo(map);
+
+
+        /* =====================================================
+           7. SUBSTITUI AS VARIÁVEIS GLOBAIS
+        ===================================================== */
+
+        window.GEOJSON_TERRITORIOS_CAS =
+          corrigido;
+
+        window.territoriosCASLayer =
+          novaCamada;
+
+        window.territoriosCASGroup =
+          novoGrupo;
+
+
+        /* =====================================================
+           8. FILTRO POR CAS
+        ===================================================== */
+
+        function getCASAtiva(){
+
+          const btn =
+            document.querySelector(
+              ".cas-btn.active"
+            );
+
+          return btn
+            ? btn.textContent.trim()
+            : "TODAS";
+
+        }
+
+
+        function atualizar(){
+
+          const ativa =
+            getCASAtiva();
+
+
+          novaCamada.eachLayer(function(layer){
+
+            const cas =
+              layer.feature.properties.cas;
+
+
+            if (ativa === "TODAS"){
+
+              layer.setStyle({
+                color:"#475569",
+                weight:1.15,
+                opacity:.62,
+                fillColor:CORES_CAS[cas],
+                fillOpacity:.20
+              });
+
+            }
+
+
+            else if (ativa === cas){
+
+              layer.setStyle({
+                color:"#334155",
+                weight:2.2,
+                opacity:.9,
+                fillColor:CORES_CAS[cas],
+                fillOpacity:.34
+              });
+
+            }
+
+
+            else{
+
+              layer.setStyle({
+                color:"#94a3b8",
+                weight:.5,
+                opacity:.15,
+                fillColor:CORES_CAS[cas],
+                fillOpacity:.035
+              });
+
+            }
+
+          });
+
+        }
+
+
+        window.atualizarTerritoriosCAS =
+          atualizar;
+
+
+        document
+          .querySelectorAll(".cas-btn")
+          .forEach(function(btn){
+
+            btn.addEventListener(
+              "click",
+              function(){
+
+                setTimeout(
+                  atualizar,
+                  20
+                );
+
+              }
+            );
+
+          });
+
+
+        /* =====================================================
+           9. CHECKBOX TERRITÓRIOS DAS CAS
+        ===================================================== */
+
+        const check =
+          document.getElementById(
+            "toggleTerritoriosCASReal"
+          );
+
+
+        if (check){
+
+          check.addEventListener(
+            "change",
+            function(){
+
+              if (this.checked){
+
+                if (
+                  !map.hasLayer(novoGrupo)
+                ){
+                  novoGrupo.addTo(map);
+                }
+
+                atualizar();
+
+              }
+
+              else{
+
+                if (
+                  map.hasLayer(novoGrupo)
+                ){
+                  map.removeLayer(novoGrupo);
+                }
+
+              }
+
+            }
+          );
+
+        }
+
+
+        atualizar();
+
+
+        console.log(
+          "CORREÇÃO 6ª CAS CONCLUÍDA:",
+          [
+            "Pavuna",
+            "Costa Barros",
+            "Barros Filho",
+            "Anchieta"
+          ]
+        );
+
+      })
+
+
+      .catch(function(erro){
+
+        console.error(
+          "Erro na correção real da 6ª CAS:",
+          erro
+        );
+
+      });
+
+  }
+
+
+  if (
+    document.readyState === "loading"
+  ){
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      aguardar
+    );
+
+  }
+
+  else{
+
+    aguardar();
+
+  }
+
+})();
+</script>
