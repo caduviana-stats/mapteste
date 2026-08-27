@@ -1,7 +1,7 @@
 <!doctype html>
 <!--
 ===============================================================================
- SIG ELEIÇÕES-RIO | MAPA INTERATIVO DA REDE E DE ARTICULAÇÕES
+ SIG SMAS-RIO | MAPA INTERATIVO DA REDE SOCIOASSISTENCIAL
 ===============================================================================
   01. Metadados e dependências
   02. Identidade visual e estilos gerais
@@ -37,16 +37,50 @@
   .leaflet-tile-pane{filter:none}
   .leaflet-tile{image-rendering:auto}
   .leaflet-labels-pane{pointer-events:none}
+  /* Tela de acesso: o mapa e seus controles permanecem invisiveis ate a
+     validacao da senha. Esta barreira evita apenas acessos casuais. */
+  .app-locked .topbar,
+  .app-locked #map,
+  .app-locked .sidebar,
+  .app-locked .drawer,
+  .app-locked .footer-badge,
+  .app-locked .mobile-layer-btn{visibility:hidden!important}
+  .access-gate{position:fixed;inset:0;z-index:99999;display:grid;place-items:center;padding:24px;background:linear-gradient(145deg,#f8fafc 0%,#e8eef2 100%)}
+  .access-gate[hidden]{display:none}
+  .access-card{width:min(100%,390px);padding:32px;background:#fff;border:1px solid #e2e8f0;border-radius:22px;box-shadow:0 24px 60px rgba(15,23,42,.16)}
+  .access-mark{width:44px;height:44px;margin-bottom:18px;border-radius:14px;display:grid;place-items:center;background:#0f172a;color:#fff;font-size:14px;font-weight:800}
+  .access-card h1{margin:0 0 8px;font-size:22px;line-height:1.2}
+  .access-card p{margin:0 0 22px;color:#64748b;font-size:14px;line-height:1.5}
+  .access-card label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .access-row{display:flex;gap:9px}
+  .access-row input{min-width:0;flex:1;height:44px;padding:0 13px;border:1px solid #cbd5e1;border-radius:11px;font:inherit;outline:none}
+  .access-row input:focus{border-color:#64748b;box-shadow:0 0 0 4px rgba(100,116,139,.14)}
+  .access-row button{height:44px;padding:0 18px;border:0;border-radius:11px;background:#0f172a;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+  .access-row button:hover{background:#1e293b}
+  .access-error{min-height:20px;margin:10px 0 0!important;color:#b91c1c!important;font-size:12px!important}
   .topbar{height:64px;position:absolute;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:20px;padding:0 22px}.brand{display:flex;align-items:center;gap:12px;min-width:330px}.brand-mark{width:36px;height:36px;border-radius:12px;background:#0f172a;display:grid;place-items:center;color:#fff;font-weight:800}.brand h1{font-size:16px;line-height:1.1;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}.search{flex:1;max-width:620px;position:relative}.search input{width:100%;height:42px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;padding:0 44px 0 44px;font-size:14px;outline:none}.search input:focus{border-color:#94a3b8;background:#fff;box-shadow:0 0 0 4px rgba(148,163,184,.18)}.search:before{content:'⌕';position:absolute;left:17px;top:8px;font-size:22px;color:#94a3b8}.stats{display:flex;gap:8px}.pill{background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;color:#334155;white-space:nowrap}.pill b{color:#0f172a}
   .sidebar{position:absolute;z-index:1000;left:16px;top:82px;width:310px;max-height:calc(100vh - 100px);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);box-shadow:var(--shadow);border:1px solid var(--line);border-radius:18px;overflow:hidden}.section{padding:16px;border-bottom:1px solid var(--line)}.section:last-child{border-bottom:0}.section h2{font-size:13px;margin:0 0 12px;color:#334155;text-transform:uppercase;letter-spacing:.05em}.check{display:flex;align-items:center;justify-content:space-between;margin:10px 0;font-size:14px}.check label{display:flex;align-items:center;gap:9px;cursor:pointer}.check input{accent-color:#0f172a}.dot{width:10px;height:10px;border-radius:50%;display:inline-block}.legend-row{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#475569}.cas-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}.cas-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-size:12px;text-align:left;cursor:pointer}.cas-btn.active{background:#0f172a;color:#fff;border-color:#0f172a}.note{font-size:11px;line-height:1.45;color:var(--muted)}
   .drawer{position:fixed;z-index:5000;right:16px;top:82px;width:380px;max-width:calc(100vw - 32px);max-height:calc(100vh - 100px);background:rgba(255,255,255,.98);backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 18px 45px rgba(15,23,42,.18);border-radius:20px;overflow:hidden;transform:translateX(430px);transition:transform .25s ease;pointer-events:none}.drawer.open{transform:translateX(0);pointer-events:auto}.drawer-head{padding:18px 18px 14px;border-bottom:1px solid var(--line)}.drawer-head small{display:inline-block;margin-bottom:8px;font-size:12px;font-weight:700;border-radius:999px;padding:4px 9px;color:#fff}.drawer-head h3{font-size:20px;margin:0;line-height:1.15}.close{position:absolute;top:14px;right:14px;border:0;background:#f1f5f9;border-radius:999px;width:32px;height:32px;cursor:pointer}.drawer-body{padding:16px 18px;overflow:auto;max-height:calc(100vh - 210px)}.field{margin-bottom:16px}.field b{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;display:block;margin-bottom:5px}.field div{font-size:14px;line-height:1.45}.muted{color:#64748b}.list{padding-left:18px;margin:6px 0 0}.list li{margin:3px 0;font-size:13px}.tooltip-clean{background:#fff;border:1px solid var(--line);box-shadow:0 8px 20px rgba(15,23,42,.12);border-radius:10px;color:#0f172a;font-weight:600;padding:7px 10px}.tooltip-clean:before{display:none}.label-cas{background:rgba(255,255,255,.9);border:1px solid #e2e8f0;border-radius:999px;box-shadow:0 3px 10px rgba(15,23,42,.08);padding:3px 7px;color:#0f172a;font-size:11px;font-weight:800}.label-cas:before{display:none}.leaflet-marker-icon{transition:opacity .15s ease, transform .15s ease}.result-box{position:absolute;top:52px;left:0;right:0;background:white;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:none;max-height:300px;overflow-y:auto}.result{padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}.result:hover{background:#f8fafc}.result:last-child{border-bottom:0}.result b{font-size:13px}.result p{font-size:12px;color:#64748b;margin:3px 0 0}.footer-badge{position:absolute;z-index:900;right:16px;bottom:18px;background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:11px;color:#64748b;box-shadow:0 6px 18px rgba(15,23,42,.08)}
   @media(max-width:850px){.brand{min-width:auto}.brand p,.stats{display:none}.topbar{gap:12px;padding:0 12px}.sidebar{width:calc(100vw - 32px);max-height:220px;overflow:auto}.drawer{top:auto;bottom:12px;right:12px;left:12px;width:auto;max-height:55vh;transform:translateY(calc(100% + 30px));pointer-events:none}.drawer.open{transform:translateY(0);pointer-events:auto}#map{inset:64px 0 0 0}}
 </style>
 </head>
-<body>
+<body class="app-locked">
 <!-- ==================== 03. ESTRUTURA DA INTERFACE =====================
      Barra superior, pesquisa, mapa, menu lateral e painel de detalhes.
      ==================================================================== -->
+<section id="accessGate" class="access-gate" aria-labelledby="accessTitle">
+  <form id="accessForm" class="access-card" novalidate>
+    <div class="access-mark" aria-hidden="true">SIG</div>
+    <h1 id="accessTitle">Acesso ao mapa</h1>
+    <p>Digite a senha para visualizar o mapeamento da rede socioassistencial.</p>
+    <label for="accessPassword">Senha</label>
+    <div class="access-row">
+      <input id="accessPassword" type="password" autocomplete="current-password" required autofocus>
+      <button type="submit">Entrar</button>
+    </div>
+    <p id="accessError" class="access-error" role="alert" aria-live="polite"></p>
+  </form>
+</section>
 <header class="topbar"><div class="brand"><div class="brand-mark">SIG</div><div><h1>Mapeamento 2026</h1><p>Zonas Eleitorais e Territórios</p></div></div><div class="search"><input id="searchInput" placeholder="Pesquisar" autocomplete="off"><div id="results" class="result-box"></div></div><div class="stats"><span class="pill"><b>10</b> CAS</span><span class="pill"><b>47</b> CRAS</span><span class="pill"><b>14</b> CREAS</span><span class="pill"><b>21</b> INSS</span></div></header>
 <div id="map"></div>
 <aside class="sidebar"><div class="section"><h2>Camadas</h2><div class="check"><label><input type="checkbox" data-type="CAS" checked><span><i class="dot" style="background:#F97316"></i> CAS</span></label></div><div class="check"><label><input type="checkbox" data-type="CRAS" checked><span><i class="dot" style="background:#FACC15"></i> CRAS</span></label></div><div class="check"><label><input type="checkbox" data-type="CREAS" checked><span><i class="dot" style="background:#DC2626"></i> CREAS</span></label></div><div class="check"><label><input type="checkbox" data-type="INSS" checked><span><i class="dot" style="background:#5B2C83"></i> INSS</span></label></div></div><div class="section"><h2>Filtrar por CAS</h2><div class="cas-grid" id="casGrid"></div></div><div class="section"><h2>Legenda</h2><div class="legend-row"><span><i class="dot" style="background:#F97316"></i> CAS</span><span><i class="dot" style="background:#FACC15"></i> CRAS</span><span><i class="dot" style="background:#DC2626"></i> CREAS</span><span><i class="dot" style="background:#5B2C83"></i> INSS</span></div><p class="note">Mapa interativo da rede socioassistencial do Município do Rio de Janeiro, com a localização das CAS, CRAS, CREAS e Agências do INSS. Coordenadas aproximadas por bairro/CAS.</p></div></aside>
@@ -5091,6 +5125,85 @@ a exibição dos polígonos territoriais.
 
 })();
 </script>
+<!-- ========================================================================
+10. CONTROLE DE ACESSO CASUAL
+Valida a senha por hash SHA-256 e libera a interface durante a sessao atual.
+Observacao: por ser uma pagina estatica, este controle nao substitui
+autenticacao no servidor para dados sensiveis.
+============================================================================ -->
+<script>
+(function configurarControleDeAcesso(){
+  const HASH_AUTORIZADO = '9477ef9b7256118969dcc15145714f06c7e67c1331c3ca63435015d9b74da8e3';
+  const CHAVE_SESSAO = 'sig-smas-acesso-validado';
+  const gate = document.getElementById('accessGate');
+  const form = document.getElementById('accessForm');
+  const passwordInput = document.getElementById('accessPassword');
+  const errorMessage = document.getElementById('accessError');
+
+  function acessoJaValidado(){
+    try {
+      return sessionStorage.getItem(CHAVE_SESSAO) === 'sim';
+    } catch (erro) {
+      return false;
+    }
+  }
+
+  function registrarAcesso(){
+    try {
+      sessionStorage.setItem(CHAVE_SESSAO, 'sim');
+    } catch (erro) {
+      /* O mapa ainda sera liberado se o navegador bloquear sessionStorage. */
+    }
+  }
+
+  function liberarMapa(){
+    registrarAcesso();
+    document.body.classList.remove('app-locked');
+    gate.hidden = true;
+
+    /* Recalcula o tamanho depois que o mapa deixa de estar oculto. */
+    setTimeout(function(){
+      if (typeof map !== 'undefined' && map && typeof map.invalidateSize === 'function') {
+        map.invalidateSize();
+      }
+    }, 0);
+  }
+
+  async function calcularHash(texto){
+    const bytes = new TextEncoder().encode(texto);
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest))
+      .map(function(byte){ return byte.toString(16).padStart(2, '0'); })
+      .join('');
+  }
+
+  if (acessoJaValidado()) {
+    liberarMapa();
+    return;
+  }
+
+  form.addEventListener('submit', async function(event){
+    event.preventDefault();
+    errorMessage.textContent = '';
+
+    try {
+      const hashInformado = await calcularHash(passwordInput.value);
+
+      if (hashInformado === HASH_AUTORIZADO) {
+        passwordInput.value = '';
+        liberarMapa();
+        return;
+      }
+
+      errorMessage.textContent = 'Senha incorreta. Tente novamente.';
+      passwordInput.select();
+    } catch (erro) {
+      errorMessage.textContent = 'Não foi possível validar a senha neste navegador.';
+    }
+  });
+})();
+</script>
+
 <!-- ========================== FIM DO PROJETO ============================ -->
 </body>
 </html>
